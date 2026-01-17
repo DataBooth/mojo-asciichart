@@ -4,12 +4,11 @@ Basic tests for mojo-asciichart.
 Tests the core plot() functionality.
 """
 
-from math import isnan
-
 from asciichart import plot
 from testing import assert_equal, assert_true
 
-fn test_plot_exists() raises:
+
+def test_plot_exists():
     """Test that plot function exists and is callable."""
     var data = List[Float64]()
     data.append(1.0)
@@ -18,18 +17,17 @@ fn test_plot_exists() raises:
     
     var result = plot(data)
     assert_true(len(result) > 0, "plot() should return non-empty string")
-    print("✓ test_plot_exists passed")
 
-fn test_empty_data() raises:
+
+def test_empty_data():
     """Test plot with empty data."""
     var data = List[Float64]()
     
     var result = plot(data)
     assert_equal(result, "", "Empty data should return empty string")
-    print("✓ test_empty_data passed")
 
 
-fn test_horizontal_line() raises:
+def test_horizontal_line():
     """Test plot with all same values (horizontal line)."""
     var data = List[Float64]()
     for _ in range(5):
@@ -38,10 +36,9 @@ fn test_horizontal_line() raises:
     var result = plot(data)
     assert_true(len(result) > 0, "Horizontal line should produce output")
     assert_true("─" in result, "Horizontal line should contain ─ symbol")
-    print("✓ test_horizontal_line passed")
 
 
-fn test_ascending_line() raises:
+def test_ascending_line():
     """Test plot with ascending values."""
     var data = List[Float64]()
     for i in range(5):
@@ -51,10 +48,9 @@ fn test_ascending_line() raises:
     assert_true(len(result) > 0, "Ascending line should produce output")
     # Should contain corner symbols for ascending line
     assert_true(("╭" in result) or ("╯" in result), "Ascending line should contain corner symbols")
-    print("✓ test_ascending_line passed")
 
 
-fn test_nan_handling() raises:
+def test_nan_handling():
     """Test plot with NaN values."""
     var data = List[Float64]()
     data.append(1.0)
@@ -65,10 +61,9 @@ fn test_nan_handling() raises:
     
     var result = plot(data)
     assert_true(len(result) > 0, "Data with NaN should still plot valid values")
-    print("✓ test_nan_handling passed")
 
 
-fn test_all_nan() raises:
+def test_all_nan():
     """Test plot with all NaN values."""
     var data = List[Float64]()
     data.append(Float64("nan"))
@@ -77,16 +72,76 @@ fn test_all_nan() raises:
     
     var result = plot(data)
     assert_equal(result, "", "All NaN data should return empty string")
-    print("✓ test_all_nan passed")
 
-fn main() raises:
-    print("=== Running Basic Tests ===\n")
+
+def main():
+    """Run all tests following Mojo testing conventions.
     
-    test_plot_exists()
-    test_empty_data()
-    test_horizontal_line()
-    test_ascending_line()
-    test_nan_handling()
-    test_all_nan()
+    Each test function follows the test_* naming pattern and uses
+    assertions from the testing module. Tests pass if they don't raise
+    an error, and fail if they do.
+    """
+    print("Running basic asciichart tests...\n")
     
+    var passed = 0
+    var failed = 0
+    
+    # Run each test and track results
+    try:
+        test_plot_exists()
+        passed += 1
+        print("✓ test_plot_exists")
+    except e:
+        failed += 1
+        print("✗ test_plot_exists:", e)
+    
+    try:
+        test_empty_data()
+        passed += 1
+        print("✓ test_empty_data")
+    except e:
+        failed += 1
+        print("✗ test_empty_data:", e)
+    
+    try:
+        test_horizontal_line()
+        passed += 1
+        print("✓ test_horizontal_line")
+    except e:
+        failed += 1
+        print("✗ test_horizontal_line:", e)
+    
+    try:
+        test_ascending_line()
+        passed += 1
+        print("✓ test_ascending_line")
+    except e:
+        failed += 1
+        print("✗ test_ascending_line:", e)
+    
+    try:
+        test_nan_handling()
+        passed += 1
+        print("✓ test_nan_handling")
+    except e:
+        failed += 1
+        print("✗ test_nan_handling:", e)
+    
+    try:
+        test_all_nan()
+        passed += 1
+        print("✓ test_all_nan")
+    except e:
+        failed += 1
+        print("✗ test_all_nan:", e)
+    
+    # Summary
+    print("\n" + "=" * 50)
+    print("Tests passed:", passed)
+    print("Tests failed:", failed)
+    if failed > 0:
+        print("FAILED")
+        raise Error("Some tests failed")
+    else:
+        print("SUCCESS")
     print("\n=== All Basic Tests Passed ===")
