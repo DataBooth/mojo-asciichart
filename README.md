@@ -10,28 +10,29 @@
 
 ```mojo
 from asciichart import plot
-from math import sin, pi
 
 fn main() raises:
-    # Generate sample data
+    # Simple data
     var data = List[Float64]()
-    for i in range(120):
-        data.append(15.0 * sin(i * ((pi * 4) / 120)))
+    for i in range(8):
+        data.append(Float64(i * i))
     
-    # Plot it!
     print(plot(data))
 ```
 
 **Output:**
 ```
-    15.00  ┼╮╭┼───────╮╭┼───────╮╭┼
-    10.71  ┤╰╯        ╰╯        ╰╯ 
-     6.43  ┤                       
-     2.14  ┤                       
-    -2.14  ┤                       
-    -6.43  ┤                       
-   -10.71  ┤╭╮        ╭╮        ╭╮ 
-   -15.00  ┼╯╰────────╯╰────────╯╰─
+   49.00  ┤      ╭
+   42.00  ┤     ╭╯
+   36.00  ┤    ╭╯
+   30.00  ┤   ╭╯
+   25.00  ┤  ╭╯
+   20.00  ┤ ╭╯
+   16.00  ┤╭╯
+    9.00  ├╯
+    4.00  ┼╯
+    1.00  ┼
+    0.00  ┼
 ```
 
 ## Practical Use Case: ML Serving Latency Monitoring
