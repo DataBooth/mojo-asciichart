@@ -76,6 +76,47 @@ fn _max(series: List[Float64]) raises -> Float64:
         raise Error("No valid numbers in series")
     return result.value()
 
+
+fn _format_label(value: Float64) -> String:
+    """Format label to match Python's '{:8.2f} ' format.
+    
+    Returns a string with 2 decimal places, right-aligned in 8 characters,
+    plus a trailing space (total 9 chars).
+    """
+    # Convert to string with 2 decimal places
+    var int_part = Int(value)
+    var frac_part = value - Float64(int_part)
+    
+    # Handle negative values
+    var is_negative = value < 0
+    if is_negative:
+        int_part = -int_part
+        frac_part = -frac_part
+    
+    # Get fractional part as integer (multiply by 100)
+    var frac_int = Int(frac_part * 100.0 + 0.5)  # Round
+    
+    # Build the string: "X.YZ"
+    var result = String(int_part) + "."
+    
+    # Pad fractional part to 2 digits
+    if frac_int < 10:
+        result += "0"
+    result += String(frac_int)
+    
+    # Add negative sign if needed
+    if is_negative:
+        result = "-" + result
+    
+    # Right-align in 8 characters
+    while len(result) < 8:
+        result = " " + result
+    
+    # Add trailing spaces (2 spaces to match Python's format)
+    result += "  "
+    
+    return result
+
 fn plot(series: List[Float64]) raises -> String:
     """Generate an ASCII line chart with default configuration."""
     return plot(series, Config())
@@ -145,7 +186,10 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     
     # Calculate dimensions
     var interval = maximum - minimum
-    var offset = config.offset
+    # Offset needs to accommodate the label width (10 chars: 8 for number + 2 spaces)
+    # Python uses offset=3 but that's just the default minimum, actual space needed is label width
+    var label_width = 10  # Length of formatted label with 2 trailing spaces
+    var offset = max(config.offset, label_width)  # Label + tick fits exactly
     var height: Float64
     if config.height:
         height = Float64(config.height.value())
@@ -197,21 +241,17 @@ fn plot(series: List[Float64], config: Config) raises -> String:
         else:
             label_value = maximum
         
-        # Format label - simplified fixed-width format
-        var label = String(label_value)
-        # Pad to width 8 + space
-        while len(label) < 9:
-            label = " " + label
-        label += " "
+        # Format label to match Python: '{:8.2f} '
+        # Format with 2 decimal places, right-aligned in 8 chars, plus trailing space
+        var label = _format_label(label_value)
         
-        # Place label
-        var label_start = max(offset - len(label), 0)
-        if label_start < offset:
-            # Replace the space at label position with label string
-            # For simplicity, just place it character by character
-            for i in range(len(label)):
-                if label_start + i < offset:
-                    result[row_idx][label_start + i] = String(label[i])
+        # Place label - it should end right before the tick mark at offset-1
+        # Label is 9 chars, so it starts at offset - 9 - 1 = offset - 10
+        # But we want it to start at position 0 in Python's layout
+        var label_start = offset - len(label) - 1
+        for i in range(len(label)):
+            if label_start + i >= 0 and label_start + i < width:
+                result[row_idx][label_start + i] = String(label[i])
         
         # Place tick mark
         if y == 0:
