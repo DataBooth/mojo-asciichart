@@ -57,13 +57,14 @@ See **[CREDITS.md](CREDITS.md)** for detailed acknowledgements to the original `
 - ✅ Pixel-perfect output matching `asciichartpy`
 - ✅ Banker's rounding (IEEE 754) for correct value placement
 - ✅ Comprehensive test suite (29 tests: 6 basic + 4 colors + 13 helpers + 6 interop)
-- ✅ Visual gallery with fun examples (Snoopy, snowflakes)
+- ✅ Performance benchmarks (1.4-4.3x faster than Python)
+- ✅ Visual gallery with fun examples (Snoopy, snowflakes, Australia)
 
 ### Future (v1.2.0+)
 - [ ] Multiple data series support (overlay charts)
 - [ ] Custom symbol themes
 - [ ] Axis labels and legends
-- [ ] Performance optimisations and benchmarks
+- [ ] Performance optimisations (target < 1ms for 100 points)
 - [ ] Bar charts and histograms
 
 See **[ROADMAP.md](ROADMAP.md)** for detailed feature plans.

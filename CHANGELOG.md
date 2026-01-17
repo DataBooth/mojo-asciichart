@@ -75,7 +75,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `test_colors.mojo` (4 tests) - validates color functionality
   - Total test suite: 29 tests (6 basic + 4 colors + 13 helpers + 6 interop)
 - GitHub Actions workflow for automated `.mojopkg` builds on releases
-- Pixi task: `example-colors`
+- 📊 **Performance Benchmarking** via BenchSuite integration
+  - `benchmarks/bench_plotting.mojo` - 6 Mojo-only benchmarks
+  - `benchmarks/bench_python_comparison.mojo` - Mojo vs Python comparison
+  - Results: Mojo is 1.4-4.3x faster than Python asciichartpy
+  - Auto-generated markdown and CSV reports
+- New examples:
+  - `examples/australia.mojo` - Australian coastline with ocean theme
+- Pixi tasks: `example-colors`, `example-australia`, `bench-plotting`, `bench-python-comparison`
 
 ### Changed
 - Moved `docs/planning/FUTURE_GENERALIZATION.md` → `ROADMAP.md`
