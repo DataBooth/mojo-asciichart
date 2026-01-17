@@ -17,6 +17,7 @@ test-basic = "mojo -I src tests/test_basic.mojo"
 test-plot = "mojo -I src tests/test_plot.mojo"
 test-compat = "mojo -I src tests/test_python_compat.mojo"
 test-compare-python = "python tests/compare_with_python.py"
+test-interop = "mojo -I src tests/test_python_interop.mojo"
 
 # Run all tests
 test-all = """bash -c '
