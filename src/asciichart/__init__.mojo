@@ -187,9 +187,9 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     # Calculate dimensions
     var interval = maximum - minimum
     # Offset needs to accommodate the label width (10 chars: 8 for number + 2 spaces)
-    # Python uses offset=3 but that's just the default minimum, actual space needed is label width
-    var label_width = 10  # Length of formatted label with 2 trailing spaces
-    var offset = max(config.offset, label_width)  # Label + tick fits exactly
+    # plus 1 for the tick mark itself
+    var label_width = 10  # Length of formatted label with 2 trailing spaces  
+    var offset = max(config.offset, label_width + 1)  # Label (0-9) + tick (10) + data starts at 11
     var height: Float64
     if config.height:
         height = Float64(config.height.value())
@@ -245,10 +245,10 @@ fn plot(series: List[Float64], config: Config) raises -> String:
         # Format with 2 decimal places, right-aligned in 8 chars, plus trailing space
         var label = _format_label(label_value)
         
-        # Place label - it should end right before the tick mark at offset-1
-        # Label is 9 chars, so it starts at offset - 9 - 1 = offset - 10
-        # But we want it to start at position 0 in Python's layout
-        var label_start = offset - len(label) - 1
+        # Place label starting at position 0
+        # Label is 10 chars (including 2 trailing spaces), tick is at offset-1
+        # So label goes from 0 to 9, tick at position 9 when offset=10
+        var label_start = 0
         for i in range(len(label)):
             if label_start + i >= 0 and label_start + i < width:
                 result[row_idx][label_start + i] = String(label[i])
