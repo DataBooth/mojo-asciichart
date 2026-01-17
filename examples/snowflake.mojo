@@ -5,7 +5,7 @@ Demonstrates creating visually interesting patterns using mathematical
 functions to approximate the hexagonal symmetry of snowflakes.
 """
 
-from asciichart import plot, Config
+from asciichart import plot, Config, ChartColors
 from math import sin, cos, pi
 
 fn main() raises:
@@ -36,6 +36,7 @@ fn main() raises:
     
     var config = Config()
     config.height = 15
+    config.colors = ChartColors.ocean()  # Cyan/blue for icy crystals
     print(plot(data, config))
     
     print("\n❄️  'No two snowflakes are alike' ❄️\n")
@@ -64,6 +65,7 @@ fn main() raises:
     
     var config2 = Config()
     config2.height = 12
+    config2.colors = ChartColors.blue()  # Blue geometric pattern
     print(plot(data2, config2))
     
     print("\n❄️  Crystalline mathematics ❄️\n")

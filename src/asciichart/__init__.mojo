@@ -24,6 +24,7 @@ Acknowledgements:
 """
 
 from math import floor, ceil, isnan
+from utils._ansi import Color
 
 
 @fieldwise_init
@@ -54,6 +55,49 @@ struct Symbols(Copyable, Movable):
         self.VERTICAL = "│"
 
 
+struct ChartColors(ImplicitlyCopyable, Copyable, Movable):
+    """ANSI color scheme for chart elements."""
+    var line: Color
+    var axis: Color
+    var labels: Color
+    
+    fn __init__(out self, line: Color = Color.NONE, axis: Color = Color.NONE, labels: Color = Color.NONE):
+        """Create custom color scheme."""
+        self.line = line
+        self.axis = axis
+        self.labels = labels
+    
+    @staticmethod
+    fn default() -> ChartColors:
+        """Default color scheme (no colors)."""
+        return ChartColors()
+    
+    @staticmethod
+    fn blue() -> ChartColors:
+        """Blue theme - blue line, cyan labels."""
+        return ChartColors(line=Color.BLUE, axis=Color.CYAN, labels=Color.CYAN)
+    
+    @staticmethod
+    fn matrix() -> ChartColors:
+        """Matrix/terminal theme - green on black."""
+        return ChartColors(line=Color.GREEN, axis=Color.GREEN, labels=Color.GREEN)
+    
+    @staticmethod
+    fn fire() -> ChartColors:
+        """Fire theme - red/yellow."""
+        return ChartColors(line=Color.RED, axis=Color.YELLOW, labels=Color.YELLOW)
+    
+    @staticmethod
+    fn ocean() -> ChartColors:
+        """Ocean theme - cyan/blue."""
+        return ChartColors(line=Color.CYAN, axis=Color.BLUE, labels=Color.BLUE)
+    
+    @staticmethod
+    fn rainbow() -> ChartColors:
+        """Rainbow theme - magenta line."""
+        return ChartColors(line=Color.MAGENTA, axis=Color.CYAN, labels=Color.YELLOW)
+
+
 @fieldwise_init
 struct Config(Copyable, Movable):
     """Configuration options for ASCII chart generation."""
@@ -62,6 +106,7 @@ struct Config(Copyable, Movable):
     var max_val: Optional[Float64]
     var offset: Int
     var format_str: String
+    var colors: Optional[ChartColors]
     
     fn __init__(out self):
         """Create default configuration."""
@@ -70,6 +115,7 @@ struct Config(Copyable, Movable):
         self.max_val = None
         self.offset = 3
         self.format_str = "{:8.2f} "
+        self.colors = None
 
 
 fn _isnum(n: Float64) -> Bool:
@@ -250,7 +296,8 @@ fn _draw_axis_and_labels(
     maximum: Float64,
     interval: Float64,
     width: Int,
-    symbols: Symbols
+    symbols: Symbols,
+    colors: ChartColors
 ) -> None:
     """Draw Y-axis labels and tick marks.
     
@@ -264,19 +311,24 @@ fn _draw_axis_and_labels(
         interval: Data range (max - min)
         width: Grid width
         symbols: Symbol set for rendering
+        colors: Color scheme for axis and labels
     """
     for y in range(min2, max2 + 1):
         var row_idx = y - min2
         var label_value = maximum - ((Float64(y - min2) * interval) / Float64(rows)) if rows > 0 else maximum
         var label = _format_label(label_value)
         
-        # Place label
+        # Place label (no color applied to individual chars, just to tick)
         for i in range(len(label)):
             if i < width:
                 result[row_idx][i] = String(label[i])
         
-        # Place tick
-        result[row_idx][offset - 1] = symbols.ZERO_AXIS if y == 0 else symbols.TICK
+        # Place tick (with color)
+        var tick = symbols.ZERO_AXIS if y == 0 else symbols.TICK
+        if String(colors.axis.color) == "":
+            result[row_idx][offset - 1] = tick
+        else:
+            result[row_idx][offset - 1] = String(colors.axis.color) + tick + String(Color.END.color)
 
 
 fn _plot_line_segment(
@@ -286,7 +338,8 @@ fn _plot_line_segment(
     y1: Int,
     rows: Int,
     offset: Int,
-    symbols: Symbols
+    symbols: Symbols,
+    line_color: Color
 ) -> None:
     """Plot a single line segment between two points.
     
@@ -298,22 +351,29 @@ fn _plot_line_segment(
         rows: Number of rows
         offset: Left margin offset
         symbols: Symbol set for rendering
+        line_color: Color for the line
     """
+    fn colored(symbol: String) -> String:
+        # Only apply color if not NONE
+        if String(line_color.color) == "":
+            return symbol
+        return String(line_color.color) + symbol + String(Color.END.color)
+    
     if y0 == y1:
-        result[rows - y0][x + offset] = symbols.HORIZONTAL
+        result[rows - y0][x + offset] = colored(symbols.HORIZONTAL)
         return
     
     # Draw corners
     if y0 > y1:  # Ascending
-        result[rows - y1][x + offset] = symbols.CORNER_DOWN_RIGHT
-        result[rows - y0][x + offset] = symbols.CORNER_UP_RIGHT
+        result[rows - y1][x + offset] = colored(symbols.CORNER_DOWN_RIGHT)
+        result[rows - y0][x + offset] = colored(symbols.CORNER_UP_RIGHT)
     else:  # Descending
-        result[rows - y1][x + offset] = symbols.CORNER_DOWN_LEFT
-        result[rows - y0][x + offset] = symbols.CORNER_UP_LEFT
+        result[rows - y1][x + offset] = colored(symbols.CORNER_DOWN_LEFT)
+        result[rows - y0][x + offset] = colored(symbols.CORNER_UP_LEFT)
     
     # Fill vertical connector
     for y in range(min(y0, y1) + 1, max(y0, y1)):
-        result[rows - y][x + offset] = symbols.VERTICAL
+        result[rows - y][x + offset] = colored(symbols.VERTICAL)
 
 
 fn plot(series: List[Float64]) raises -> String:
@@ -351,6 +411,9 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     
     # Create symbols for rendering
     var symbols = Symbols()
+    
+    # Get colors (default to no colors)
+    var colors = config.colors.value() if config.colors else ChartColors.default()
     
     # Calculate dimensions
     var interval = maximum - minimum
@@ -392,12 +455,16 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     var result = _create_grid(rows, width)
     
     # Draw axis and labels
-    _draw_axis_and_labels(result, min2, max2, offset, rows, maximum, interval, width, symbols)
+    _draw_axis_and_labels(result, min2, max2, offset, rows, maximum, interval, width, symbols, colors)
     
     # Plot first value
     var d0 = series[0]
     if _isnum(d0):
-        result[rows - scaled(d0)][offset - 1] = symbols.ZERO_AXIS
+        var tick = symbols.ZERO_AXIS
+        if String(colors.axis.color) == "":
+            result[rows - scaled(d0)][offset - 1] = tick
+        else:
+            result[rows - scaled(d0)][offset - 1] = String(colors.axis.color) + tick + String(Color.END.color)
     
     # Plot the line
     for x in range(len(series) - 1):
@@ -409,17 +476,27 @@ fn plot(series: List[Float64], config: Config) raises -> String:
             continue
         
         if isnan(v0) and _isnum(v1):
-            result[rows - scaled(v1)][x + offset] = symbols.GAP_START
+            var gap_start: String
+            if String(colors.line.color) == "":
+                gap_start = symbols.GAP_START
+            else:
+                gap_start = String(colors.line.color) + symbols.GAP_START + String(Color.END.color)
+            result[rows - scaled(v1)][x + offset] = gap_start
             continue
         
         if _isnum(v0) and isnan(v1):
-            result[rows - scaled(v0)][x + offset] = symbols.GAP_END
+            var gap_end: String
+            if String(colors.line.color) == "":
+                gap_end = symbols.GAP_END
+            else:
+                gap_end = String(colors.line.color) + symbols.GAP_END + String(Color.END.color)
+            result[rows - scaled(v0)][x + offset] = gap_end
             continue
         
         # Both values are valid numbers - use helper function
         var y0 = scaled(v0)
         var y1 = scaled(v1)
-        _plot_line_segment(result, x, y0, y1, rows, offset, symbols)
+        _plot_line_segment(result, x, y0, y1, rows, offset, symbols, colors.line)
     
     # Join result into string
     var output = String("")
