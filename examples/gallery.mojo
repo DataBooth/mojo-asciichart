@@ -36,27 +36,29 @@ fn example_quadratic() raises:
 
 
 fn example_sine_wave() raises:
-    """Smooth sine wave."""
-    print("SINE WAVE")
-    print("One complete cycle\n")
+    """Smooth sine wave matching original asciichart README."""
+    print("SINE WAVE (matching original asciichart README example)")
+    print("120 points, 4 complete cycles: 15 * sin(i * π * 4 / 120)\n")
     
     var data = List[Float64]()
-    for i in range(60):
-        data.append(10.0 * sin(Float64(i) * ((2.0 * pi) / 60.0)))
+    for i in range(120):
+        data.append(15.0 * sin(Float64(i) * ((pi * 4.0) / 120.0)))
     
     print(plot(data))
 
 
 fn example_cosine_wave() raises:
-    """Cosine wave."""
-    print("COSINE WAVE")
-    print("Phase-shifted sine wave\n")
+    """Cosine wave matching README height rescaling example."""
+    print("COSINE WAVE WITH HEIGHT RESCALING")
+    print("120 points, rescaled to height=6: 15 * cos(i * π * 8 / 120)\n")
     
     var data = List[Float64]()
-    for i in range(60):
-        data.append(10.0 * cos(Float64(i) * ((2.0 * pi) / 60.0)))
+    for i in range(120):
+        data.append(15.0 * cos(Float64(i) * ((pi * 8.0) / 120.0)))
     
-    print(plot(data))
+    var config = Config()
+    config.height = 6
+    print(plot(data, config))
 
 
 fn example_damped_oscillation() raises:
