@@ -81,33 +81,43 @@ struct Config:
 
 **Current State**: Monochrome output
 
+**Mojo Stdlib Support**: ✅ Mojo stdlib includes `utils._ansi.Color` struct with predefined colors:
+- `Color.RED`, `Color.GREEN`, `Color.YELLOW`, `Color.BLUE`
+- `Color.MAGENTA`, `Color.CYAN`, `Color.BOLD_WHITE`
+- ANSI escape sequences: `"\033[91m"` (red), `"\033[0m"` (reset)
+- Example: `print(Color.RED, "text", Color.END)`
+
 **Proposed API**:
 ```mojo
-struct Colors:
-    """ANSI color codes for chart elements."""
-    var axis: String
-    var line: String  
-    var labels: String
+from utils._ansi import Color
+
+struct ChartColors:
+    """Color scheme for chart elements."""
+    var axis: Color
+    var line: Color  
+    var labels: Color
 
 struct Config:
-    var colors: Optional[Colors]
+    var colors: Optional[ChartColors]
 
-# Predefined colors
-fn Colors.blue() -> Colors
-fn Colors.green() -> Colors  
-fn Colors.rainbow() -> Colors  # Cycle through colors
+# Predefined color schemes
+fn ChartColors.default() -> ChartColors:  # Blue line, white labels
+fn ChartColors.matrix() -> ChartColors:   # Green terminal style
+fn ChartColors.fire() -> ChartColors:     # Red/yellow gradient
+fn ChartColors.ocean() -> ChartColors:    # Blue/cyan
 ```
 
 **Implementation Notes**:
-- Wrap symbols in ANSI escape codes
-- Support 16-color and 256-color modes
-- Add `--no-color` flag for plain output
-- Helper function to detect color support
+- Leverage existing `utils._ansi.Color` struct from stdlib
+- Wrap symbols/labels with color codes: `str(color) + symbol + str(Color.END)`
+- Add `NO_COLOR` environment variable support for disabling
+- Consider `Text[Writable]` wrapper for typed color application
 
 **Benefits**:
 - More visually appealing output
-- Multiple series with distinct colors
-- Highlight important data points
+- Multiple series with distinct colors (future)
+- Highlight axis, data, or outliers
+- No external dependencies (stdlib only)
 
 ---
 

@@ -60,10 +60,13 @@ See **[CREDITS.md](CREDITS.md)** for detailed acknowledgements to the original `
 
 ### Future (v1.1.0+)
 - [ ] Multiple data series support (overlay charts)
-- [ ] Custom symbols and ANSI colours
+- [ ] ANSI colours (via `utils._ansi.Color` stdlib)
+- [ ] Custom symbol themes
 - [ ] Axis labels and legends
 - [ ] Performance optimisations and benchmarks
 - [ ] Bar charts and histograms
+
+See **[ROADMAP.md](ROADMAP.md)** for detailed feature plans.
 
 ## Installation
 
@@ -179,15 +182,25 @@ pixi run mojo -I src examples/gallery.mojo
 ### Running Examples
 
 ```bash
+# Basic examples
 pixi run example-simple
+pixi run example-sine
+
+# Visual gallery
+pixi run example-gallery
+
+# Fun patterns
+pixi run example-snoopy     # Classic Snoopy sleeping on doghouse
+pixi run example-snowflake  # Crystalline symmetry patterns
 ```
 
 ## Documentation
 
 - [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
+- [ROADMAP.md](ROADMAP.md) - Future features and technical plans
 - [CREDITS.md](CREDITS.md) - Acknowledgements and project history
 - [docs/BLOG_POST.md](docs/BLOG_POST.md) - Implementation lessons learned
-- [docs/planning/](docs/planning/) - Design docs and future roadmap
+- [docs/planning/](docs/planning/) - Design docs and code reviews
 
 ## Contributing
 
