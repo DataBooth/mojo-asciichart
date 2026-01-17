@@ -184,8 +184,10 @@ pixi run example-simple
 
 ## Documentation
 
+- [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
 - [CREDITS.md](CREDITS.md) - Acknowledgements and project history
-- [docs/planning/](docs/planning/) - Development roadmap and design docs (coming soon)
+- [docs/BLOG_POST.md](docs/BLOG_POST.md) - Implementation lessons learned
+- [docs/planning/](docs/planning/) - Design docs and future roadmap
 
 ## Contributing
 
