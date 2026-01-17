@@ -218,11 +218,25 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     
     fn scaled(y: Float64) -> Int:
         var scaled_val = clamp(y) * ratio
-        # Round manually (add 0.5 and floor)
-        if scaled_val >= 0:
-            return Int(floor(scaled_val + 0.5)) - min2
+        # Implement banker's rounding (round half to even) to match Python's round()
+        # This is IEEE 754 rounding: .5 rounds to the nearest even integer
+        var floored = floor(scaled_val)
+        var diff = scaled_val - floored
+        
+        var rounded: Int
+        if diff < 0.5:
+            rounded = Int(floored)
+        elif diff > 0.5:
+            rounded = Int(floored) + 1
         else:
-            return Int(ceil(scaled_val - 0.5)) - min2
+            # Exactly 0.5: round to even
+            var floor_int = Int(floored)
+            if floor_int % 2 == 0:
+                rounded = floor_int
+            else:
+                rounded = floor_int + 1
+        
+        return rounded - min2
     
     # Create result grid
     var result = List[List[String]]()
