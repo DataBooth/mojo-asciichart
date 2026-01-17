@@ -43,6 +43,7 @@ example-snoopy = "mojo -I src examples/snoopy.mojo"
 example-snowflake = "mojo -I src examples/snowflake.mojo"
 example-colors = "mojo -I src examples/colors.mojo"
 example-australia = "mojo -I src examples/australia.mojo"
+example-ml-serving = "mojo -I src examples/ml_serving.mojo"
 
 # Benchmark tasks
 bench-plotting = "mojo -I src -I libs/benchsuite/src benchmarks/bench_plotting.mojo"

@@ -34,6 +34,45 @@ fn main() raises:
    -15.00  ┼╯╰────────╯╰────────╯╰─
 ```
 
+## Practical Use Case: ML Serving Latency Monitoring
+
+ASCII charts are perfect for quick visual feedback in production environments. Here's a realistic example monitoring ML model prediction latencies:
+
+```mojo
+# examples/ml_serving.mojo - Monitor API latency in real-time
+from asciichart import plot, Config, ChartColors
+
+fn main() raises:
+    var latencies = collect_api_latencies()  # Last 100 requests
+    
+    var config = Config()
+    config.height = 12
+    config.colors = ChartColors.fire()  # Red/yellow for 'hot' data
+    
+    print(plot(latencies, config))
+    print_stats(latencies)  # Mean, P95, etc.
+```
+
+**Output:**
+```
+  101.90  ├              ╭╮
+   88.34  ├              ││               ╭╮
+   74.78  ├    ╭╮        ││               ││
+   61.22  ├   ╭╯│        ││               ││        ╭╮
+   47.66  ├   │ │  ╭─╮  ╭╯╰╮              ││        ││               ╭───╯╰──╮
+   34.10  ├   │ │  │ ╰──╯  │              ││        ││               │       │
+   20.54  ┤───╯ ╰──╯       ╰──────────────╯╰─────╯╰─╯╰──╯╰──╯╰─╯ ╰─╯         ╰╯ ╰──╯╰╯╯  ╰╯ ╰╯
+
+📊 Stats: Mean=25.3ms | P95=63.7ms | Max=101.9ms
+⚠️  Action: High latency spikes detected - check cold starts
+```
+
+**Perfect for:**
+- 🔌 SSH'd into production servers
+- 📦 CI/CD pipeline monitoring
+- 📝 Quick health checks in logs
+- 🛠️ Local development testing
+
 ## Motivation
 
 This project ports `asciichartpy` to Mojo to provide:
