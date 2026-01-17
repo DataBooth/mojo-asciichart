@@ -62,7 +62,7 @@ fn main() raises:
    20.54  ┤───╯ ╰──╯       ╰──────────────╯╰─────╯╰─╯╰──╯╰────╯╰─╯         ╰╯ ╰──╯╰╯╯  ╰╯ ╰╯       ╰╯
 
 📊 Stats: Mean=25.3ms | P95=63.7ms | Max=101.9ms
-⚠️  Action: High latency spikes detected - check cold starts
+⚠️  Action: High latency spikes detected
 ```
 
 **Perfect for:**
