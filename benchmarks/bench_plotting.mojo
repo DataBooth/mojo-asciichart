@@ -81,7 +81,10 @@ fn plot_sine_wave():
 def main():
     print("\n🔥 mojo-asciichart Performance Benchmarks 🔥\n")
     
-    var report = BenchReport()
+    # Enable auto-save to generate markdown report
+    var report = BenchReport(auto_print=True, auto_save=True, 
+                            save_dir="benchmarks/reports", 
+                            name_prefix="asciichart_bench")
     
     # Run benchmarks with adaptive iteration counts
     report.benchmark[plot_small_series]("plot_10_points")
@@ -91,4 +94,5 @@ def main():
     report.benchmark[plot_with_colors]("plot_with_colors")
     report.benchmark[plot_sine_wave]("plot_sine_wave_120pts")
     
-    print("\n✅ Benchmarks complete!\n")
+    print("\n✅ Benchmarks complete!")
+    print("📊 Reports saved to: benchmarks/reports/\n")
