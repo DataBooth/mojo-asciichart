@@ -18,13 +18,14 @@
 
 ## Exec Summary
 
-For business and technical leaders: This post documents practical lessons from porting a Python visualisation library to Mojo, demonstrating that Mojo can achieve pixel-perfect compatibility with Python libraries while maintaining its performance advantages.
+For business and technical leaders: This post documents practical lessons from porting a Python visualisation library to Mojo, demonstrating that Mojo can achieve pixel-perfect compatibility with Python libraries while delivering measurable performance improvements.
 
 **Key takeaways:**
-- **Mojo handles complex text rendering**: Successfully ported asciichartpy with UTF-8 box-drawing characters
+- **Mojo handles complex text rendering**: Successfully ported asciichartpy with UTF-8 box-drawing characters and ANSI colors
 - **Python compatibility is achievable**: Achieved identical output to Python reference implementation
-- **Development velocity**: Built a production-ready charting library in a single session
-- **Testing strategy matters**: Combined unit tests, visual galleries, and Python interop testing
+- **Performance advantage verified**: Benchmarks show 1.4-4.3x speedup over Python
+- **Development velocity**: Built production-ready library with colors and benchmarks in under 10 hours total
+- **Testing strategy matters**: Combined unit tests (29), visual galleries, Python interop, and performance benchmarks
 
 ## Why ASCII Charts?
 
@@ -260,24 +261,76 @@ if diff == 0.5:
 
 **Total**: ~7 hours from idea to production-ready library with pixel-perfect Python compatibility.
 
+## v1.1.0 Update: Colors & Performance 🎨⚡
+
+**Released 2026-01-17** — Added ANSI color support and comprehensive performance benchmarking!
+
+### ANSI Color Support
+
+Added 6 predefined color themes using Mojo's stdlib (zero dependencies):
+
+```mojo
+from asciichart import plot, Config, ChartColors
+
+fn main() raises:
+    var data = List[Float64]()
+    for i in range(60):
+        data.append(10.0 * sin(Float64(i) * ((2.0 * pi) / 60.0)))
+    
+    var config = Config()
+    config.colors = ChartColors.matrix()  # Green terminal aesthetic!
+    print(plot(data, config))
+```
+
+**Available themes:**
+- `ChartColors.blue()` - Classic blue terminal
+- `ChartColors.matrix()` - Green Matrix-style
+- `ChartColors.fire()` - Red/yellow heat map
+- `ChartColors.ocean()` - Cyan/blue nautical
+- `ChartColors.rainbow()` - Multi-color spectrum
+- `ChartColors.default()` - Terminal default
+
+Colors add minimal overhead (~2.5x, still < 200µs for 100 points).
+
+### Performance Benchmarks
+
+**Mojo vs Python comparison** (M1 Mac, Mojo 0.25.7.0):
+
+| Data Points | Mojo | Python (asciichartpy) | Speedup |
+|-------------|------|----------------------|----------|
+| 10 points   | 7.4 µs | 31.8 µs | **4.3x faster** |
+| 100 points  | 107 µs | 262 µs | **2.4x faster** |
+| 1000 points | 4.6 ms | 6.5 ms | **1.4x faster** |
+
+*Python measurements via Mojo interop (includes overhead)*
+
+Benchmarks integrated using [BenchSuite](https://github.com/DataBooth/mojo-benchsuite) with auto-generated markdown and CSV reports.
+
+### Additional v1.1.0 Features
+
+- 🇦🇺 **Fun examples**: Snoopy, Snowflake, Australia coastline
+- 🤖 **CI/CD**: Automated `.mojopkg` builds on GitHub releases
+- 📝 **29 tests**: Expanded from 12 (4 new color tests)
+- 📊 **Comprehensive docs**: ROADMAP, RELEASE_NOTES, benchmark reports
+
 ## What's Next
 
-**Immediate priorities:**
-1. Multi-series support (plot multiple lines on one chart)
-2. ANSI color support for colored lines
-3. Custom axis labels
-4. Performance benchmarking vs Python
+**v1.2.0 Priorities:**
+1. Performance optimization (target < 1ms for 100 points)
+2. Multi-series support (plot multiple lines on one chart)
+3. Legend rendering
+4. Custom symbols and line styles
 
 **Future enhancements:**
 5. Bar charts and histograms
-6. Configurable symbols (different line styles)
-7. Horizontal charts
-8. Legend support
+6. Horizontal charts
+7. Custom axis labels
+8. Additional color themes
 
 **Community:**
 - Submit to modular-community pixi channel
-- Blog post on databooth.com.au
 - Share in Mojo Discord
+- Continue performance profiling
 
 ## Try It Yourself
 
