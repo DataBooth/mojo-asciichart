@@ -45,7 +45,7 @@ fn plot_with_config():
     var data = List[Float64]()
     for i in range(100):
         data.append(Float64(i))
-    
+
     var config = Config()
     config.height = 20
     try:
@@ -58,7 +58,7 @@ fn plot_with_colors():
     var data = List[Float64]()
     for i in range(100):
         data.append(Float64(i))
-    
+
     var config = Config()
     config.colors = ChartColors.matrix()
     try:
@@ -69,7 +69,7 @@ fn plot_with_colors():
 fn plot_sine_wave():
     """Benchmark plotting realistic sine wave."""
     from math import sin, pi
-    
+
     var data = List[Float64]()
     for i in range(120):
         data.append(15.0 * sin(Float64(i) * ((pi * 4.0) / 120.0)))
@@ -80,12 +80,12 @@ fn plot_sine_wave():
 
 def main():
     print("\n🔥 mojo-asciichart Performance Benchmarks 🔥\n")
-    
+
     # Enable auto-save to generate markdown report
-    var report = BenchReport(auto_print=True, auto_save=True, 
-                            save_dir="benchmarks/reports", 
+    var report = BenchReport(auto_print=True, auto_save=True,
+                            save_dir="benchmarks/reports",
                             name_prefix="asciichart_bench")
-    
+
     # Run benchmarks with adaptive iteration counts
     report.benchmark[plot_small_series]("plot_10_points")
     report.benchmark[plot_medium_series]("plot_100_points")
@@ -93,6 +93,6 @@ def main():
     report.benchmark[plot_with_config]("plot_with_config")
     report.benchmark[plot_with_colors]("plot_with_colors")
     report.benchmark[plot_sine_wave]("plot_sine_wave_120pts")
-    
+
     print("\n✅ Benchmarks complete!")
     print("📊 Reports saved to: benchmarks/reports/\n")

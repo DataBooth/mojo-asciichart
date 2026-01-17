@@ -16,19 +16,19 @@ fn test_simple_comparison() raises:
     var mojo_data = List[Float64]()
     for i in range(5):
         mojo_data.append(Float64(i))
-    
+
     # Generate chart with Mojo
     var mojo_output = plot(mojo_data)
-    
+
     # Import Python's asciichartpy
     var asciichartpy = Python.import_module("asciichartpy")
-    
+
     # Create equivalent Python list
     var py_data = Python.evaluate("[0.0, 1.0, 2.0, 3.0, 4.0]")
-    
+
     # Generate chart with Python
     var py_output = String(asciichartpy.plot(py_data))
-    
+
     # Compare
     assert_equal(mojo_output, py_output, "Outputs should match exactly")
 
@@ -36,52 +36,52 @@ fn test_simple_comparison() raises:
 fn test_sine_wave_comparison() raises:
     """Compare sine wave with Python asciichartpy."""
     from math import sin, pi
-    
+
     # Create sine wave data in Mojo
     var mojo_data = List[Float64]()
     for i in range(30):
         mojo_data.append(10.0 * sin(Float64(i) * ((2.0 * pi) / 30.0)))
-    
+
     # Generate chart with Mojo
     var mojo_output = plot(mojo_data)
-    
+
     # Import Python modules
     var asciichartpy = Python.import_module("asciichartpy")
     var py_data = Python.evaluate(
         "[10.0 * __import__('math').sin(i * ((2.0 * __import__('math').pi) / 30.0)) for i in range(30)]"
     )
-    
+
     # Generate chart with Python
     var py_output = String(asciichartpy.plot(py_data))
-    
+
     assert_equal(mojo_output, py_output, "Sine wave outputs should match")
 
 
 fn test_with_height_config() raises:
     """Compare charts with height configuration."""
     from math import sin, pi
-    
+
     # Create data
     var mojo_data = List[Float64]()
     for i in range(30):
         mojo_data.append(10.0 * sin(Float64(i) * ((2.0 * pi) / 30.0)))
-    
+
     # Generate with Mojo (height=6)
     var mojo_config = Config()
     mojo_config.height = 6
     var mojo_output = plot(mojo_data, mojo_config)
-    
+
     # Import Python
     var asciichartpy = Python.import_module("asciichartpy")
     var py_data = Python.evaluate(
         "[10.0 * __import__('math').sin(i * ((2.0 * __import__('math').pi) / 30.0)) for i in range(30)]"
     )
-    
+
     # Generate with Python (height=6)
     var py_config = Python.dict()
     py_config["height"] = 6
     var py_output = String(asciichartpy.plot(py_data, py_config))
-    
+
     assert_equal(mojo_output, py_output, "Configured outputs should match")
 
 
@@ -91,15 +91,15 @@ fn test_flat_line_comparison() raises:
     var mojo_data = List[Float64]()
     for _ in range(10):
         mojo_data.append(5.0)
-    
+
     # Generate with Mojo
     var mojo_output = plot(mojo_data)
-    
+
     # Python
     var asciichartpy = Python.import_module("asciichartpy")
     var py_data = Python.evaluate("[5.0] * 10")
     var py_output = String(asciichartpy.plot(py_data))
-    
+
     assert_equal(mojo_output, py_output, "Flat line outputs should match")
 
 
@@ -107,19 +107,19 @@ fn test_data_from_python_list() raises:
     """Test using data loaded from Python directly."""
     # Load data from Python (simulating reading from file or API)
     var py_data = Python.evaluate("[i * i for i in range(10)]")
-    
+
     # Convert Python list to Mojo List
     var mojo_data = List[Float64]()
     for i in range(len(py_data)):
         mojo_data.append(Float64(py_data[i]))
-    
+
     # Generate chart with Mojo
     var mojo_output = plot(mojo_data)
-    
+
     # Compare with Python's direct plot
     var asciichartpy = Python.import_module("asciichartpy")
     var py_output = String(asciichartpy.plot(py_data))
-    
+
     assert_equal(mojo_output, py_output, "Should work with Python data sources")
 
 
@@ -129,19 +129,19 @@ fn test_csv_data_comparison() raises:
     var csv_data = Python.evaluate("""
 [12.5, 15.3, 14.8, 18.2, 22.1, 25.4, 23.8, 20.5, 17.2, 14.9]
 """)
-    
+
     # Convert to Mojo
     var mojo_data = List[Float64]()
     for i in range(len(csv_data)):
         mojo_data.append(Float64(csv_data[i]))
-    
+
     # Plot with Mojo
     var mojo_output = plot(mojo_data)
-    
+
     # Plot with Python
     var asciichartpy = Python.import_module("asciichartpy")
     var py_output = String(asciichartpy.plot(csv_data))
-    
+
     assert_equal(mojo_output, py_output, "CSV data outputs should match")
 
 

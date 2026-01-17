@@ -13,11 +13,11 @@ fn test_round_half_to_even_basic() raises:
     # Less than 0.5 - round down
     assert_equal(_round_half_to_even(1.3), 1)
     assert_equal(_round_half_to_even(2.4), 2)
-    
+
     # Greater than 0.5 - round up
     assert_equal(_round_half_to_even(1.6), 2)
     assert_equal(_round_half_to_even(2.7), 3)
-    
+
     # Exact integers
     assert_equal(_round_half_to_even(5.0), 5)
     assert_equal(_round_half_to_even(10.0), 10)
@@ -31,7 +31,7 @@ fn test_round_half_to_even_halves() raises:
     assert_equal(_round_half_to_even(4.5), 4, "4.5 should round to 4 (even)")
     assert_equal(_round_half_to_even(12.5), 12, "12.5 should round to 12 (even)")
     assert_equal(_round_half_to_even(20.5), 20, "20.5 should round to 20 (even)")
-    
+
     # Round up to even
     assert_equal(_round_half_to_even(1.5), 2, "1.5 should round to 2 (even)")
     assert_equal(_round_half_to_even(3.5), 4, "3.5 should round to 4 (even)")

@@ -48,11 +48,12 @@ example-australia = "mojo -I src examples/australia.mojo"
 bench-plotting = "mojo -I src -I libs/benchsuite/src benchmarks/bench_plotting.mojo"
 bench-python-comparison = "mojo -I src -I libs/benchsuite/src benchmarks/bench_python_comparison.mojo"
 
-# Code quality tasks (placeholder for future pre-commit hooks)
-# pre-commit = "pre-commit run --all-files"
-# pre-commit-install = "pre-commit install"
+# Code quality tasks
+pre-commit = "pre-commit run --all-files"
+pre-commit-install = "pre-commit install"
 
 [dependencies]
 max = ">=25.7.0,<26"
 python = ">=3.10,<4"
 asciichartpy = ">=1.5.25,<2"
+pre-commit = ">=4.0.1,<5"

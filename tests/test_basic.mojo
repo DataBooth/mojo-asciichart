@@ -14,7 +14,7 @@ fn test_plot_exists() raises:
     data.append(1.0)
     data.append(2.0)
     data.append(3.0)
-    
+
     var result = plot(data)
     assert_true(len(result) > 0, "plot() should return non-empty string")
 
@@ -22,7 +22,7 @@ fn test_plot_exists() raises:
 fn test_empty_data() raises:
     """Test plot with empty data."""
     var data = List[Float64]()
-    
+
     var result = plot(data)
     assert_equal(result, "", "Empty data should return empty string")
 
@@ -32,7 +32,7 @@ fn test_horizontal_line() raises:
     var data = List[Float64]()
     for _ in range(5):
         data.append(5.0)
-    
+
     var result = plot(data)
     assert_true(len(result) > 0, "Horizontal line should produce output")
     assert_true("─" in result, "Horizontal line should contain ─ symbol")
@@ -43,7 +43,7 @@ fn test_ascending_line() raises:
     var data = List[Float64]()
     for i in range(5):
         data.append(Float64(i))
-    
+
     var result = plot(data)
     assert_true(len(result) > 0, "Ascending line should produce output")
     # Should contain corner symbols for ascending line
@@ -58,7 +58,7 @@ fn test_nan_handling() raises:
     data.append(Float64("nan"))
     data.append(4.0)
     data.append(5.0)
-    
+
     var result = plot(data)
     assert_true(len(result) > 0, "Data with NaN should still plot valid values")
 
@@ -69,7 +69,7 @@ fn test_all_nan() raises:
     data.append(Float64("nan"))
     data.append(Float64("nan"))
     data.append(Float64("nan"))
-    
+
     var result = plot(data)
     assert_equal(result, "", "All NaN data should return empty string")
 
