@@ -27,6 +27,34 @@ from math import floor, ceil, isnan
 
 
 @fieldwise_init
+struct Symbols(Copyable, Movable):
+    """Box-drawing characters for chart rendering."""
+    var ZERO_AXIS: String
+    var TICK: String
+    var GAP_START: String
+    var GAP_END: String
+    var HORIZONTAL: String
+    var CORNER_DOWN_RIGHT: String
+    var CORNER_DOWN_LEFT: String
+    var CORNER_UP_RIGHT: String
+    var CORNER_UP_LEFT: String
+    var VERTICAL: String
+    
+    fn __init__(out self):
+        """Create default box-drawing symbols."""
+        self.ZERO_AXIS = "┼"
+        self.TICK = "┤"
+        self.GAP_START = "╶"
+        self.GAP_END = "╴"
+        self.HORIZONTAL = "─"
+        self.CORNER_DOWN_RIGHT = "╰"
+        self.CORNER_DOWN_LEFT = "╭"
+        self.CORNER_UP_RIGHT = "╮"
+        self.CORNER_UP_LEFT = "╯"
+        self.VERTICAL = "│"
+
+
+@fieldwise_init
 struct Config(Copyable, Movable):
     """Configuration options for ASCII chart generation."""
     var height: Optional[Int]
@@ -49,32 +77,108 @@ fn _isnum(n: Float64) -> Bool:
     return not isnan(n)
 
 
-fn _min(series: List[Float64]) raises -> Float64:
-    """Find minimum value in series, ignoring NaN."""
+fn _round_half_to_even(value: Float64) -> Int:
+    """Implement banker's rounding (IEEE 754): round half to even.
+    
+    This matches Python's round() behavior where .5 values round to 
+    the nearest even integer.
+    
+    Examples:
+        12.5 -> 12 (round down to even)
+        13.5 -> 14 (round up to even)
+        20.5 -> 20 (round down to even)
+        21.5 -> 22 (round up to even)
+    """
+    var floored = floor(value)
+    var diff = value - floored
+    
+    if diff < 0.5:
+        return Int(floored)
+    elif diff > 0.5:
+        return Int(floored) + 1
+    else:
+        # Exactly 0.5: round to even
+        var floor_int = Int(floored)
+        return floor_int if floor_int % 2 == 0 else floor_int + 1
+
+
+fn _find_extreme(series: List[Float64], find_max: Bool) raises -> Float64:
+    """Find min or max value in series, ignoring NaN.
+    
+    Args:
+        series: List of Float64 values
+        find_max: If True, find maximum; if False, find minimum
+    
+    Returns:
+        The minimum or maximum value
+    
+    Raises:
+        Error if no valid numbers found in series
+    """
     var result: Optional[Float64] = None
     for i in range(len(series)):
         if _isnum(series[i]):
             if not result:
                 result = series[i]
-            elif series[i] < result.value():
-                result = series[i]
+            else:
+                var current = result.value()
+                if find_max and series[i] > current:
+                    result = series[i]
+                elif not find_max and series[i] < current:
+                    result = series[i]
     if not result:
         raise Error("No valid numbers in series")
     return result.value()
+
+
+fn _min(series: List[Float64]) raises -> Float64:
+    """Find minimum value in series, ignoring NaN."""
+    return _find_extreme(series, False)
 
 
 fn _max(series: List[Float64]) raises -> Float64:
     """Find maximum value in series, ignoring NaN."""
-    var result: Optional[Float64] = None
+    return _find_extreme(series, True)
+
+
+fn _validate_series(series: List[Float64]) -> Bool:
+    """Check if series has at least one valid (non-NaN) value."""
     for i in range(len(series)):
         if _isnum(series[i]):
-            if not result:
-                result = series[i]
-            elif series[i] > result.value():
-                result = series[i]
-    if not result:
-        raise Error("No valid numbers in series")
-    return result.value()
+            return True
+    return False
+
+
+struct Bounds:
+    """Min/max bounds for chart data."""
+    var minimum: Float64
+    var maximum: Float64
+    
+    fn __init__(out self, minimum: Float64, maximum: Float64):
+        self.minimum = minimum
+        self.maximum = maximum
+
+
+fn _get_bounds(series: List[Float64], config: Config) raises -> Bounds:
+    """Get min/max bounds from config or calculate from series.
+    
+    Args:
+        series: List of Float64 values
+        config: Configuration with optional min/max overrides
+    
+    Returns:
+        Bounds with minimum and maximum values
+    
+    Raises:
+        Error if minimum exceeds maximum
+    """
+    var minimum = config.min_val.value() if config.min_val else _min(series)
+    var maximum = config.max_val.value() if config.max_val else _max(series)
+    
+    if minimum > maximum:
+        raise Error("The min value cannot exceed the max value.")
+    
+    return Bounds(minimum, maximum)
 
 
 fn _format_label(value: Float64) -> String:
@@ -117,6 +221,101 @@ fn _format_label(value: Float64) -> String:
     
     return result
 
+
+fn _create_grid(rows: Int, width: Int) -> List[List[String]]:
+    """Create empty character grid for rendering.
+    
+    Args:
+        rows: Number of rows in the grid
+        width: Number of columns in the grid
+    
+    Returns:
+        2D grid filled with spaces
+    """
+    var result = List[List[String]]()
+    for _ in range(rows + 1):
+        var row = List[String]()
+        for _ in range(width):
+            row.append(" ")
+        result.append(row^)
+    return result^
+
+
+fn _draw_axis_and_labels(
+    mut result: List[List[String]],
+    min2: Int,
+    max2: Int,
+    offset: Int,
+    rows: Int,
+    maximum: Float64,
+    interval: Float64,
+    width: Int,
+    symbols: Symbols
+) -> None:
+    """Draw Y-axis labels and tick marks.
+    
+    Args:
+        result: Grid to draw into (modified in-place)
+        min2: Scaled minimum value
+        max2: Scaled maximum value
+        offset: Left margin offset
+        rows: Number of rows
+        maximum: Maximum data value
+        interval: Data range (max - min)
+        width: Grid width
+        symbols: Symbol set for rendering
+    """
+    for y in range(min2, max2 + 1):
+        var row_idx = y - min2
+        var label_value = maximum - ((Float64(y - min2) * interval) / Float64(rows)) if rows > 0 else maximum
+        var label = _format_label(label_value)
+        
+        # Place label
+        for i in range(len(label)):
+            if i < width:
+                result[row_idx][i] = String(label[i])
+        
+        # Place tick
+        result[row_idx][offset - 1] = symbols.ZERO_AXIS if y == 0 else symbols.TICK
+
+
+fn _plot_line_segment(
+    mut result: List[List[String]],
+    x: Int,
+    y0: Int,
+    y1: Int,
+    rows: Int,
+    offset: Int,
+    symbols: Symbols
+) -> None:
+    """Plot a single line segment between two points.
+    
+    Args:
+        result: Grid to draw into (modified in-place)
+        x: X coordinate
+        y0: Scaled Y coordinate of first point
+        y1: Scaled Y coordinate of second point
+        rows: Number of rows
+        offset: Left margin offset
+        symbols: Symbol set for rendering
+    """
+    if y0 == y1:
+        result[rows - y0][x + offset] = symbols.HORIZONTAL
+        return
+    
+    # Draw corners
+    if y0 > y1:  # Ascending
+        result[rows - y1][x + offset] = symbols.CORNER_DOWN_RIGHT
+        result[rows - y0][x + offset] = symbols.CORNER_UP_RIGHT
+    else:  # Descending
+        result[rows - y1][x + offset] = symbols.CORNER_DOWN_LEFT
+        result[rows - y0][x + offset] = symbols.CORNER_UP_LEFT
+    
+    # Fill vertical connector
+    for y in range(min(y0, y1) + 1, max(y0, y1)):
+        result[rows - y][x + offset] = symbols.VERTICAL
+
+
 fn plot(series: List[Float64]) raises -> String:
     """Generate an ASCII line chart with default configuration."""
     return plot(series, Config())
@@ -141,48 +340,17 @@ fn plot(series: List[Float64], config: Config) raises -> String:
         print(plot(data))
         ```
     """
-    # Handle empty series
-    if len(series) == 0:
+    # Handle empty series or all-NaN series
+    if len(series) == 0 or not _validate_series(series):
         return ""
     
-    # Check if all values are NaN
-    var has_valid = False
-    for i in range(len(series)):
-        if _isnum(series[i]):
-            has_valid = True
-            break
-    if not has_valid:
-        return ""
+    # Get min/max bounds
+    var bounds = _get_bounds(series, config)
+    var minimum = bounds.minimum
+    var maximum = bounds.maximum
     
-    # Calculate min/max
-    var minimum: Float64
-    var maximum: Float64
-    
-    if config.min_val:
-        minimum = config.min_val.value()
-    else:
-        minimum = _min(series)
-    
-    if config.max_val:
-        maximum = config.max_val.value()
-    else:
-        maximum = _max(series)
-    
-    if minimum > maximum:
-        raise Error("The min value cannot exceed the max value.")
-    
-    # Box-drawing symbols
-    var symbols = List[String]()
-    symbols.append("┼")  # [0] zero-axis
-    symbols.append("┤")  # [1] tick
-    symbols.append("╶")  # [2] gap start
-    symbols.append("╴")  # [3] gap end
-    symbols.append("─")  # [4] horizontal
-    symbols.append("╰")  # [5] corner down-right
-    symbols.append("╭")  # [6] corner down-left
-    symbols.append("╮")  # [7] corner up-right
-    symbols.append("╯")  # [8] corner up-left
-    symbols.append("│")  # [9] vertical
+    # Create symbols for rendering
+    var symbols = Symbols()
     
     # Calculate dimensions
     var interval = maximum - minimum
@@ -218,65 +386,18 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     
     fn scaled(y: Float64) -> Int:
         var scaled_val = clamp(y) * ratio
-        # Implement banker's rounding (round half to even) to match Python's round()
-        # This is IEEE 754 rounding: .5 rounds to the nearest even integer
-        var floored = floor(scaled_val)
-        var diff = scaled_val - floored
-        
-        var rounded: Int
-        if diff < 0.5:
-            rounded = Int(floored)
-        elif diff > 0.5:
-            rounded = Int(floored) + 1
-        else:
-            # Exactly 0.5: round to even
-            var floor_int = Int(floored)
-            if floor_int % 2 == 0:
-                rounded = floor_int
-            else:
-                rounded = floor_int + 1
-        
-        return rounded - min2
+        return _round_half_to_even(scaled_val) - min2
     
     # Create result grid
-    var result = List[List[String]]()
-    for _ in range(rows + 1):
-        var row = List[String]()
-        for _ in range(width):
-            row.append(" ")
-        result.append(row^)
+    var result = _create_grid(rows, width)
     
     # Draw axis and labels
-    for y in range(min2, max2 + 1):
-        var row_idx = y - min2
-        var label_value: Float64
-        if rows > 0:
-            label_value = maximum - ((Float64(y - min2) * interval) / Float64(rows))
-        else:
-            label_value = maximum
-        
-        # Format label to match Python: '{:8.2f} '
-        # Format with 2 decimal places, right-aligned in 8 chars, plus trailing space
-        var label = _format_label(label_value)
-        
-        # Place label starting at position 0
-        # Label is 10 chars (including 2 trailing spaces), tick is at offset-1
-        # So label goes from 0 to 9, tick at position 9 when offset=10
-        var label_start = 0
-        for i in range(len(label)):
-            if label_start + i >= 0 and label_start + i < width:
-                result[row_idx][label_start + i] = String(label[i])
-        
-        # Place tick mark
-        if y == 0:
-            result[row_idx][offset - 1] = symbols[0]  # zero-axis
-        else:
-            result[row_idx][offset - 1] = symbols[1]  # tick
+    _draw_axis_and_labels(result, min2, max2, offset, rows, maximum, interval, width, symbols)
     
     # Plot first value
     var d0 = series[0]
     if _isnum(d0):
-        result[rows - scaled(d0)][offset - 1] = symbols[0]
+        result[rows - scaled(d0)][offset - 1] = symbols.ZERO_AXIS
     
     # Plot the line
     for x in range(len(series) - 1):
@@ -288,37 +409,17 @@ fn plot(series: List[Float64], config: Config) raises -> String:
             continue
         
         if isnan(v0) and _isnum(v1):
-            result[rows - scaled(v1)][x + offset] = symbols[2]  # gap start
+            result[rows - scaled(v1)][x + offset] = symbols.GAP_START
             continue
         
         if _isnum(v0) and isnan(v1):
-            result[rows - scaled(v0)][x + offset] = symbols[3]  # gap end
+            result[rows - scaled(v0)][x + offset] = symbols.GAP_END
             continue
         
-        # Both values are valid numbers
+        # Both values are valid numbers - use helper function
         var y0 = scaled(v0)
         var y1 = scaled(v1)
-        
-        if y0 == y1:
-            # Horizontal line
-            result[rows - y0][x + offset] = symbols[4]
-            continue
-        
-        # Diagonal line
-        if y0 > y1:
-            # Ascending (v1 is higher on screen)
-            result[rows - y1][x + offset] = symbols[5]  # corner down-right
-            result[rows - y0][x + offset] = symbols[7]  # corner up-right
-        else:
-            # Descending (v1 is lower on screen)
-            result[rows - y1][x + offset] = symbols[6]  # corner down-left
-            result[rows - y0][x + offset] = symbols[8]  # corner up-left
-        
-        # Fill vertical connector
-        var start = min(y0, y1) + 1
-        var end = max(y0, y1)
-        for y in range(start, end):
-            result[rows - y][x + offset] = symbols[9]  # vertical
+        _plot_line_segment(result, x, y0, y1, rows, offset, symbols)
     
     # Join result into string
     var output = String("")
