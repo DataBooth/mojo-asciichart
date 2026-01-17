@@ -1,0 +1,3 @@
+[submodule "libs/benchsuite"]
+	path = libs/benchsuite
+	url = https://github.com/DataBooth/mojo-benchsuite

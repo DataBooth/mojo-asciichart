@@ -236,6 +236,7 @@ pixi run example-snowflake  # Crystalline symmetry patterns
 
 ## Documentation
 
+- [RELEASE_NOTES.md](RELEASE_NOTES.md) - Comprehensive release notes for all versions
 - [CHANGELOG.md](CHANGELOG.md) - Version history and release notes
 - [ROADMAP.md](ROADMAP.md) - Future features and technical plans
 - [CREDITS.md](CREDITS.md) - Acknowledgements and project history
