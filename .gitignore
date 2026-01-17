@@ -1,0 +1,47 @@
+# Mojo
+*.mojopkg
+dist/
+build/
+__pycache__/
+.mojo_cache/
+
+# pixi
+.pixi/
+pixi.lock
+
+# Python
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.venv/
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.tox/
+.hypothesis/
+
+# Documentation builds
+docs/_build/
+docs/.doctrees/
+
+# Misc
+*.log
+.env
+.env.local
