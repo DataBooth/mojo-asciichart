@@ -101,8 +101,9 @@ See **[CREDITS.md](CREDITS.md)** for detailed acknowledgements to the original `
 
 ### Future (v1.2.0+)
 - [ ] Multiple data series support (overlay charts)
+- [ ] Custom x-axis labels (currently implicit indices 0→9)
+- [ ] Legend rendering for multi-series
 - [ ] Custom symbol themes
-- [ ] Axis labels and legends
 - [ ] Performance optimisations (target < 1ms for 100 points)
 - [ ] Bar charts and histograms
 

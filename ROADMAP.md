@@ -124,6 +124,41 @@ fn plot_with_legend(
 
 ---
 
+#### Custom Axis Labels (X-axis)
+**Goal**: Allow custom labels on the x-axis (currently implicit indices)
+
+```mojo
+struct Config:
+    var x_labels: Optional[List[String]]  # Custom x-axis labels
+    var x_label_interval: Int             # Show every Nth label
+
+var config = Config()
+config.x_labels = ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"]
+config.x_label_interval = 1
+print(plot(data, config))
+
+# Output:
+#    20.54  ┤───╯ ╰──╯
+#           └─────────────────────────────────
+#           00:00  04:00  08:00  12:00  16:00
+```
+
+**Benefits**:
+- Time series with timestamps
+- Categorical x-axis (days, months, categories)
+- Better context for data
+- Currently x-axis is implicit (0, 1, 2, ..., n)
+
+**Implementation**:
+- Render labels below chart
+- Auto-spacing based on chart width
+- Optional rotation for long labels
+- Smart label skipping for dense data
+
+**Estimated Effort**: 1 week
+
+---
+
 ### Medium Priority
 
 #### Custom Symbol Themes

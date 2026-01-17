@@ -49,7 +49,8 @@ fn simulate_prediction_latency(request_num: Int, total_requests: Int) -> Float64
 fn main() raises:
     print("\n🚀 ML MODEL SERVING - LATENCY MONITORING 🚀\n")
     print("Scenario: Production API serving predictions")
-    print("Monitoring: Last 100 requests (real-time latency in milliseconds)\n")
+    print("Monitoring: Last 100 requests (real-time latency in milliseconds)")
+    print("Note: X-axis represents request sequence (0→100), Y-axis shows latency (ms)\n")
 
     # Simulate 100 prediction requests
     var latencies = List[Float64]()
