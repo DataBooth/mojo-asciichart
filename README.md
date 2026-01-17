@@ -2,7 +2,7 @@
 
 **Nice-looking lightweight console ASCII line charts ╭┈╯ for Mojo**
 
-> **Status:** 🚧 **Early Development** - Basic functionality in progress
+> **Status:** ✅ **Production Ready** - Pixel-perfect Python compatibility achieved
 
 ## Overview
 
@@ -46,19 +46,24 @@ See **[CREDITS.md](CREDITS.md)** for detailed acknowledgements to the original `
 
 ## Features
 
-### Planned (v0.1.0)
-- [ ] Basic `plot()` function for single series
-- [ ] Configurable height
-- [ ] Configurable formatting options
-- [ ] Multiple data series support
-- [ ] Python interop tests for compatibility validation
+### Current (v1.0.0) ✅
+- ✅ Basic `plot()` function for single series
+- ✅ Configurable height via `Config` struct
+- ✅ Automatic min/max detection and scaling
+- ✅ NaN value handling (gaps in data)
+- ✅ UTF-8 box-drawing characters for smooth curves
+- ✅ Python interop tests for compatibility validation
+- ✅ Pixel-perfect output matching `asciichartpy`
+- ✅ Banker's rounding (IEEE 754) for correct value placement
+- ✅ Comprehensive test suite (12 tests: 6 basic + 6 Python interop)
+- ✅ Visual gallery with 13 chart examples
 
-### Future (v0.2.0+)
-- [ ] Custom symbols and colours
+### Future (v1.1.0+)
+- [ ] Multiple data series support (overlay charts)
+- [ ] Custom symbols and ANSI colours
 - [ ] Axis labels and legends
-- [ ] Performance optimisations
-
-See [docs/planning/ROADMAP.md](docs/planning/ROADMAP.md) for detailed roadmap (coming soon).
+- [ ] Performance optimisations and benchmarks
+- [ ] Bar charts and histograms
 
 ## Installation
 
@@ -80,13 +85,10 @@ pixi run example-simple
 
 ### Usage in Your Project
 
-**Note:** Installation methods will be available once the initial implementation is complete.
-
-Planned installation options:
-- Git submodule
-- Direct copy of source files
-- pixi (via modular-community channel)
-- Compiled package (.mojopkg)
+**Current installation options:**
+- **Git submodule**: Add as a submodule and import from `src/asciichart`
+- **Direct copy**: Copy `src/asciichart/` into your project
+- **Future**: pixi package (via modular-community channel), compiled `.mojopkg`
 
 ## Usage
 
@@ -104,7 +106,7 @@ fn main() raises:
     print(plot(data))
 ```
 
-### Configuration Options (Planned)
+### Configuration Options
 
 ```mojo
 from asciichart import plot, Config
@@ -123,7 +125,23 @@ fn main() raises:
 
 ### API Reference
 
-Documentation will be added as the implementation progresses.
+**Core Function:**
+```mojo
+fn plot(series: List[Float64]) raises -> String
+fn plot(series: List[Float64], config: Config) raises -> String
+```
+
+**Configuration:**
+```mojo
+struct Config:
+    var height: Optional[Int]     # Chart height in rows
+    var min_val: Optional[Float64]  # Force minimum value
+    var max_val: Optional[Float64]  # Force maximum value
+    var offset: Int                 # Left margin (default: 3)
+    var format_str: String          # Label format (default: 8.2f)
+```
+
+See [docs/BLOG_POST.md](docs/BLOG_POST.md) for detailed implementation notes.
 
 ## Project Structure
 
@@ -148,11 +166,14 @@ mojo-asciichart/
 ### Running Tests
 
 ```bash
-# Individual tests
-pixi run test-basic
+# Run basic tests
+pixi run mojo -I src tests/test_basic.mojo
 
-# All tests
-pixi run test-all
+# Run Python interop tests
+pixi run mojo -I src tests/test_python_interop.mojo
+
+# Run visual gallery
+pixi run mojo -I src examples/gallery.mojo
 ```
 
 ### Running Examples

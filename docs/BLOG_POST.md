@@ -130,10 +130,10 @@ Running `pixi run example-gallery` produces 565 lines of visual output for manua
 
 ### 4. Test Suites Need Framework Awareness
 
-Adapted tests to follow [Mojo's testing conventions](https://docs.modular.com/mojo/tools/testing/):
+Adapted tests to follow [Mojo's testing conventions](https://docs.modular.com/mojo/tools/testing/) with modern TestSuite:
 
 ```mojo
-def test_sine_wave():
+fn test_sine_wave() raises:
     """Test plot with sine wave data."""
     var data = List[Float64]()
     for i in range(30):
@@ -142,15 +142,20 @@ def test_sine_wave():
     var result = plot(data)
     assert_true(len(result) > 0, "Sine wave should produce output")
     assert_true("╭" in result or "╯" in result, "Should contain curves")
+
+def main():
+    var suite = TestSuite()
+    suite.test[test_sine_wave]()
+    suite^.run()
 ```
 
-Key changes from typical Python tests:
-- Functions use `def` not `fn`
-- Test names follow `test_*` pattern
-- Assertions from `testing` module
-- Manual test runner with try/except blocks
+Key patterns:
+- Test functions use `fn` with `raises` declaration
+- TestSuite auto-discovers and runs tests
+- Clean formatted output with timing
+- `suite.test[function_name]()` registration
 
-**Result**: 6/6 tests passing, with clear pass/fail indicators.
+**Result**: 12/12 tests passing (6 basic + 6 Python interop), with timing data.
 
 ### 5. Gallery Examples Are Essential
 
@@ -189,25 +194,37 @@ This catches subtle differences that manual testing might miss.
 
 ### 7. Pixel-Perfect Compatibility is Achievable
 
-The devil was in the details—specifically, label placement:
+Two critical details needed to match Python exactly:
 
+**Challenge 1: Label Placement**  
 **Initial attempt**: Labels missing or misaligned  
-**Issue**: Offset calculation was complex
-```mojo
-var label_start = max(offset - len(label), 0)  # Wrong!
-```
-
 **Solution**: Simplify—place label at position 0
 ```mojo
 var label_start = 0  # Label always starts at 0
 var offset = label_width + 1  # Account for tick mark
 ```
 
-**Result**:
-- Python: `'    4.00  ┼   ╭'`
-- Mojo:   `'    4.00  ┼   ╭'`  ✅ **Identical!**
+**Challenge 2: Banker's Rounding**  
+**Issue**: Simple `floor(x + 0.5)` rounding differs from Python's IEEE 754  
+**Impact**: Values like 12.5 and 20.5 placed incorrectly
+```mojo
+// Mojo (wrong): 12.5 → 13, 20.5 → 21
+// Python:       12.5 → 12, 20.5 → 20
+```
 
-**Lesson**: Sometimes the simplest solution is the right one. Over-engineering the offset calculation caused bugs.
+**Solution**: Implement banker's rounding (round half to even)
+```mojo
+if diff == 0.5:
+    # Exactly 0.5: round to even
+    var floor_int = Int(floored)
+    rounded = floor_int if floor_int % 2 == 0 else floor_int + 1
+```
+
+**Result**:
+- Python: `'    4.00  ├   ╭'`
+- Mojo:   `'    4.00  ├   ╭'`  ✅ **Identical!**
+
+**Lesson**: Subtle differences in rounding algorithms can break pixel-perfect compatibility. Always match the reference implementation's rounding strategy.
 
 ## The Journey
 
@@ -222,19 +239,26 @@ var offset = label_width + 1  # Account for tick mark
 - Built 13-example gallery for visual verification
 - All tests passing
 
-### Python Compatibility (2 hours)
+### Python Compatibility (2.5 hours)
 - Discovered label formatting differences
 - Implemented `_format_label()` with manual decimal handling
 - Fixed offset calculation (3 iterations)
+- Discovered banker's rounding discrepancy with CSV test
+- Implemented IEEE 754 round-half-to-even
 - Achieved pixel-perfect output match
 
+### Modern Testing (0.5 hours)
+- Updated to TestSuite with fn functions
+- Added Python interop tests (6 tests)
+- All 12 tests passing with timing
+
 ### Documentation (1 hour)
-- README with quick start
+- README with quick start and API reference
 - CREDITS with acknowledgements to Igor Kroitor
 - GALLERY.md inspection guide
 - This blog post!
 
-**Total**: ~6 hours from idea to production-ready library with full Python compatibility.
+**Total**: ~7 hours from idea to production-ready library with pixel-perfect Python compatibility.
 
 ## What's Next
 
