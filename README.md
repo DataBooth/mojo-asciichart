@@ -53,23 +53,26 @@ fn main() raises:
     print_stats(latencies)  # Mean, P95, etc.
 ```
 
-**Output:**
+**Output (shortened for display):**
 ```
-  101.90  ┤              ╭╮
-   81.56  ┤    ╭╮        ││               ╭╮
-   61.22  ┤   ╭╯│        ││               ││        ╭╮
-   40.88  ┤   │ │  │ ╰──╯  │              ││        ││               │       │
-   20.54  ┤───╯ ╰──╯       ╰──────────────╯╰─────╯╰─╯╰──╯╰────╯╰─╯         ╰╯ ╰──╯╰╯╯  ╰╯ ╰╯       ╰╯
+   65.2  ┤  ╭╮    ╭╮
+   52.1  ┤  ││    ││  ╭╮
+   39.0  ┤ ╭╯│    ││  │╰╮
+   26.0  ┤ │ │  ╭╮││  │ │ ╭╮
+   13.0  ┼─╯ ╰──╯╰╯╰──╯ ╰─╯╰──
 
 📊 Stats: Mean=25.3ms | P95=63.7ms | Max=101.9ms
 ⚠️  Action: High latency spikes detected
 ```
+_Note: Actual output is wider (100 data points). This is shortened for markdown display only._
 
 **Perfect for:**
 - 🔌 SSH'd into production servers
 - 📦 CI/CD pipeline monitoring
 - 📝 Quick health checks in logs
 - 🛠️ Local development testing
+
+_Run `pixi run example-ml-serving` to see full width chart with colors!_
 
 ## Motivation
 
