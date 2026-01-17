@@ -46,21 +46,21 @@ See **[CREDITS.md](CREDITS.md)** for detailed acknowledgements to the original `
 
 ## Features
 
-### Current (v1.0.0) ✅
+### Current (v1.1.0) ✅
 - ✅ Basic `plot()` function for single series
 - ✅ Configurable height via `Config` struct
 - ✅ Automatic min/max detection and scaling
 - ✅ NaN value handling (gaps in data)
 - ✅ UTF-8 box-drawing characters for smooth curves
+- ✅ 🎨 **ANSI color support** (6 predefined themes)
 - ✅ Python interop tests for compatibility validation
 - ✅ Pixel-perfect output matching `asciichartpy`
 - ✅ Banker's rounding (IEEE 754) for correct value placement
-- ✅ Comprehensive test suite (12 tests: 6 basic + 6 Python interop)
-- ✅ Visual gallery with 13 chart examples
+- ✅ Comprehensive test suite (29 tests: 6 basic + 4 colors + 13 helpers + 6 interop)
+- ✅ Visual gallery with fun examples (Snoopy, snowflakes)
 
-### Future (v1.1.0+)
+### Future (v1.2.0+)
 - [ ] Multiple data series support (overlay charts)
-- [ ] ANSI colours (via `utils._ansi.Color` stdlib)
 - [ ] Custom symbol themes
 - [ ] Axis labels and legends
 - [ ] Performance optimisations and benchmarks
@@ -126,6 +126,32 @@ fn main() raises:
     print(plot(data, config))
 ```
 
+### Using Colors
+
+```mojo
+from asciichart import plot, Config, ChartColors
+from math import sin, pi
+
+fn main() raises:
+    var data = List[Float64]()
+    for i in range(60):
+        data.append(10.0 * sin(Float64(i) * ((2.0 * pi) / 60.0)))
+    
+    # Apply color scheme
+    var config = Config()
+    config.colors = ChartColors.ocean()  # Cyan/blue theme
+    
+    print(plot(data, config))
+```
+
+**Available color schemes:**
+- `ChartColors.default()` - No colors
+- `ChartColors.blue()` - Blue line, cyan axis/labels
+- `ChartColors.matrix()` - Green terminal theme
+- `ChartColors.fire()` - Red/yellow theme
+- `ChartColors.ocean()` - Cyan/blue theme
+- `ChartColors.rainbow()` - Multicolor (magenta/cyan/yellow)
+
 ### API Reference
 
 **Core Function:**
@@ -137,11 +163,25 @@ fn plot(series: List[Float64], config: Config) raises -> String
 **Configuration:**
 ```mojo
 struct Config:
-    var height: Optional[Int]     # Chart height in rows
-    var min_val: Optional[Float64]  # Force minimum value
-    var max_val: Optional[Float64]  # Force maximum value
-    var offset: Int                 # Left margin (default: 3)
-    var format_str: String          # Label format (default: 8.2f)
+    var height: Optional[Int]          # Chart height in rows
+    var min_val: Optional[Float64]     # Force minimum value
+    var max_val: Optional[Float64]     # Force maximum value
+    var offset: Int                    # Left margin (default: 3)
+    var format_str: String             # Label format (default: 8.2f)
+    var colors: Optional[ChartColors]  # Color scheme (default: None)
+
+struct ChartColors:
+    var line: Color    # Line/curve color
+    var axis: Color    # Axis tick color
+    var labels: Color  # Label text color
+    
+    @staticmethod
+    fn default() -> ChartColors    # No colors
+    fn blue() -> ChartColors       # Blue theme
+    fn matrix() -> ChartColors     # Green terminal
+    fn fire() -> ChartColors       # Red/yellow
+    fn ocean() -> ChartColors      # Cyan/blue
+    fn rainbow() -> ChartColors    # Multicolor
 ```
 
 See [docs/BLOG_POST.md](docs/BLOG_POST.md) for detailed implementation notes.

@@ -386,11 +386,11 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     Generate an ASCII line chart from a list of Float64 values.
     
     Args:
-        series: List of Float64 values to plot
-        cfg: Optional configuration for chart appearance
+        series: List of Float64 values to plot.
+        config: Optional configuration for chart appearance.
     
     Returns:
-        String containing the ASCII chart
+        String containing the ASCII chart.
     
     Example:
         ```mojo

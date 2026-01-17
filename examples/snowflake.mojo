@@ -36,7 +36,7 @@ fn main() raises:
     
     var config = Config()
     config.height = 15
-    config.colors = ChartColors.ocean()  # Cyan/blue for icy crystals
+    config.colors = ChartColors.fire()  # Cyan/blue for icy crystals
     print(plot(data, config))
     
     print("\n❄️  'No two snowflakes are alike' ❄️\n")

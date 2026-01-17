@@ -53,19 +53,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [1.1.0] - 2026-01-17
 
-### Planned for v1.1.0
-- Multiple series support (overlay charts)
-- ANSI color support
-- Legend rendering
-- Custom symbol themes
+### Added
+- 🎨 **ANSI Color Support** via Mojo stdlib `utils._ansi.Color`
+  - `ChartColors` struct with `line`, `axis`, and `labels` color fields
+  - 6 predefined color schemes:
+    - `default()` - no colors (Color.NONE)
+    - `blue()` - blue line, cyan axis/labels
+    - `matrix()` - green terminal theme
+    - `fire()` - red/yellow theme
+    - `ocean()` - cyan/blue theme
+    - `rainbow()` - multicolor (magenta/cyan/yellow)
+  - Added `colors: Optional[ChartColors]` field to Config
+  - Smart color wrapping: only adds ANSI codes when color != NONE
+- New examples:
+  - `examples/colors.mojo` - demonstrates all 6 color schemes
+  - `examples/snoopy.mojo` - classic Snoopy sleeping on doghouse pattern
+  - `examples/snowflake.mojo` - crystalline symmetry patterns (with colors)
+- New tests:
+  - `test_colors.mojo` (4 tests) - validates color functionality
+  - Total test suite: 29 tests (6 basic + 4 colors + 13 helpers + 6 interop)
+- GitHub Actions workflow for automated `.mojopkg` builds on releases
+- Pixi task: `example-colors`
 
-See [FUTURE_GENERALIZATION.md](docs/planning/FUTURE_GENERALIZATION.md) for detailed roadmap.
+### Changed
+- Moved `docs/planning/FUTURE_GENERALIZATION.md` → `ROADMAP.md`
+- Updated ROADMAP with detailed ANSI color implementation notes
+- Updated README with color scheme documentation
+- Color-aware plotting functions:
+  - `_plot_line_segment()` - wraps line symbols with color
+  - `_draw_axis_and_labels()` - colors axis ticks and labels
+
+### Technical Details
+- Zero external dependencies (uses Mojo stdlib only)
+- ANSI format: `\033[XXm` (color) + symbol + `\033[0m` (reset)
+- Backward compatible: existing code works without modification
+- Color.NONE provides empty string ("") for no-color mode
 
 ---
 
-## Project Links
+## [1.0.0] - 2026-01-17
 - **Repository**: https://github.com/DataBooth/mojo-asciichart
 - **Issues**: https://github.com/DataBooth/mojo-asciichart/issues
 - **Original**: https://github.com/kroitor/asciichart (JavaScript & Python)
