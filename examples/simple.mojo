@@ -14,7 +14,6 @@ fn main() raises:
     for i in range(10):
         data.append(Float64(i * i))
     
-    print("Data:", data)
     print("\nChart:")
     print(plot(data))
     
