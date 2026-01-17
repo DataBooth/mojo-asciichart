@@ -36,6 +36,7 @@ clean = "rm -rf dist __pycache__ .pytest_cache asciichart.mojopkg"
 # Example tasks
 example-simple = "mojo -I src examples/simple.mojo"
 example-sine = "mojo -I src examples/sine.mojo"
+example-gallery = "mojo -I src examples/gallery.mojo"
 
 # Code quality tasks (placeholder for future pre-commit hooks)
 # pre-commit = "pre-commit run --all-files"
