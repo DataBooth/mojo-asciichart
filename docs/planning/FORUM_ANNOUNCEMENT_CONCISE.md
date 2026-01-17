@@ -1,6 +1,10 @@
-# mojo-asciichart v1.0.0 - ASCII Line Charts
+# mojo-asciichart v1.1.0 - ASCII Line Charts with Colors! 🎨
 
-I've released **mojo-asciichart**, a native Mojo port of asciichartpy with pixel-perfect Python compatibility and zero dependencies.
+I've released **mojo-asciichart v1.1.0**, a native Mojo port of asciichartpy with:
+- 🎨 ANSI color support (6 themes!)
+- ⚡ Pixel-perfect Python compatibility
+- 🔥 Zero dependencies (stdlib only)
+- 📊 Comprehensive benchmarking
 
 ## What it does
 
@@ -63,17 +67,54 @@ fn main() raises:
     print(plot(data, config))
 ```
 
-## What's in v1.0.0
+## What's New in v1.1.0
 
-- ✅ Core `plot()` function with automatic scaling
-- ✅ `Config` struct for height, min/max, offset customization
-- ✅ NaN value handling (shows gaps)
-- ✅ Banker's rounding (IEEE 754) for pixel-perfect Python compatibility
-- ✅ Modern TestSuite with 12 tests (6 basic + 6 Python interop)
-- ✅ Comprehensive visual gallery (13 chart examples)
-- ✅ ~7 hours from idea to production-ready library
+- 🎨 **ANSI Color Support** - 6 predefined themes (blue, matrix, fire, ocean, rainbow)
+- 📊 **Performance Benchmarking** - Integrated with BenchSuite
+- 🇦🇺 **Fun Examples** - Snoopy, Snowflake, Australia coastline
+- 🤖 **CI/CD** - Automated `.mojopkg` builds on releases
+- 📝 **29 Tests** - Expanded from 25 (4 new color tests)
 
-**Python Compatibility**: Verified pixel-perfect output matching against asciichartpy.
+### Color Example
+
+```mojo
+from asciichart import plot, Config, ChartColors
+
+fn main() raises:
+    var data = List[Float64]()
+    for i in range(60):
+        data.append(10.0 * sin(Float64(i) * ((2.0 * pi) / 60.0)))
+    
+    var config = Config()
+    config.colors = ChartColors.matrix()  # Green terminal theme!
+    print(plot(data, config))
+```
+
+## Performance
+
+**Benchmarked on M1 Mac with Mojo 0.25.7.0**:
+
+### Native Mojo Performance
+
+| Data Points | Mean Time | Status |
+|-------------|-----------|--------|
+| 10 points   | 7.4 µs    | ⚡ Very fast |
+| 100 points  | 107 µs    | ✅ Production ready |
+| 1000 points | 4.6 ms    | ⚠️ Needs optimisation |
+
+### Mojo vs Python (asciichartpy)
+
+| Data Points | Mojo | Python | Speedup |
+|-------------|------|--------|----------|
+| 10 points   | 7.4 µs | 31.8 µs | **4.3x faster** |
+| 100 points  | 107 µs | 262 µs | **2.4x faster** |
+| 1000 points | 4.6 ms | 6.5 ms | **1.4x faster** |
+
+*Note: Python measurements include Python interop overhead when called from Mojo.*
+
+Colors add minimal overhead (~2.5x vs baseline, still < 200µs for 100 points).
+
+**Python Compatibility**: Verified pixel-perfect output matching against asciichartpy with 6 interop tests.
 
 ## Use Cases
 
@@ -93,11 +134,17 @@ fn main() raises:
 
 ## Roadmap
 
-Planned features for v1.1.0+:
+Completed in v1.1.0:
+- ✅ ANSI color support (6 themes)
+- ✅ Performance benchmarks
+- ✅ Comprehensive documentation
+- ✅ GitHub CI/CD
+
+Planned for v1.2.0+:
 - Multiple data series support (overlay charts)
-- ANSI color support for colored lines
+- Legend rendering
 - Custom symbols and line styles
-- Performance benchmarks vs Python
+- Performance optimizations (target < 1ms for 100 points)
 - Bar charts and histograms
 
 ## Acknowledgements

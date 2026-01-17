@@ -46,6 +46,7 @@ example-australia = "mojo -I src examples/australia.mojo"
 
 # Benchmark tasks
 bench-plotting = "mojo -I src -I libs/benchsuite/src benchmarks/bench_plotting.mojo"
+bench-python-comparison = "mojo -I src -I libs/benchsuite/src benchmarks/bench_python_comparison.mojo"
 
 # Code quality tasks (placeholder for future pre-commit hooks)
 # pre-commit = "pre-commit run --all-files"

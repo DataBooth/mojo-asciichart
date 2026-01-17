@@ -5,13 +5,18 @@ Performance benchmarks for mojo-asciichart using [BenchSuite](https://github.com
 ## Running Benchmarks
 
 ```bash
-# Run all benchmarks and generate reports
+# Run Mojo-only performance benchmarks
 pixi run bench-plotting
+
+# Run Mojo vs Python comparison benchmark
+pixi run bench-python-comparison
 
 # Reports are auto-saved to benchmarks/reports/ with timestamps
 ```
 
 ## Current Results
+
+### Mojo Native Performance
 
 **Environment**: Mojo 0.25.7.0 (e5af2b2f) | macOS 14.6.0 | Apple M1 (8 cores)
 
@@ -26,6 +31,18 @@ pixi run bench-plotting
 
 *Total Time = Mean × Iterations (approximate benchmark duration)
 
+### Mojo vs Python Performance
+
+**Comparison against Python asciichartpy (via Mojo interop)**:
+
+| Data Points | Mojo (native) | Python (interop) | Speedup |
+|-------------|---------------|------------------|----------|
+| 10 points   | 7.4 µs        | 31.8 µs          | **4.3x** |
+| 100 points  | 107 µs        | 262 µs           | **2.4x** |
+| 1000 points | 4.6 ms        | 6.5 ms           | **1.4x** |
+
+*Note: Python measurements include Python interop overhead when called from Mojo. Native Python-to-Python calls would be slightly faster.*
+
 ### Key Insights
 
 - ⚠️ **100-point plotting is slow** (19.6ms) - **target < 1ms for v1.2.0**
@@ -33,6 +50,7 @@ pixi run bench-plotting
 - ✅ Large charts (1000 points) are acceptable (953µs)
 - ✅ Colors add minimal overhead (199µs vs 80µs baseline ~2.5x)
 - ✅ Realistic use case (120pt sine) is fast (79.6µs)
+- 🔥 **Mojo is 1.4-4.3x faster than Python** even with interop overhead
 
 ### Performance Priorities for v1.2.0
 
@@ -121,25 +139,40 @@ except:
 
 ## Benchmark Definitions
 
+### Native Mojo Benchmarks
+
 See `bench_plotting.mojo` for implementation details.
 
-### plot_10_points
+**plot_10_points**  
 Minimal chart with 10 sequential integers. Tests baseline overhead.
 
-### plot_100_points
+**plot_100_points**  
 Medium chart with 100 quadratic values. **Performance bottleneck identified.**
 
-### plot_1000_points
+**plot_1000_points**  
 Large chart with 1000 linear values. Tests scalability.
 
-### plot_with_config
+**plot_with_config**  
 100 points with custom config (height=20). Tests config overhead.
 
-### plot_with_colors
+**plot_with_colors**  
 100 points with matrix color theme. Tests ANSI color overhead.
 
-### plot_sine_wave_120pts
+**plot_sine_wave_120pts**  
 Realistic use case: 120-point sine wave. Tests typical workload.
+
+### Python Comparison Benchmarks
+
+See `bench_python_comparison.mojo` for implementation details.
+
+**mojo_10_points / python_10_points**  
+Compares Mojo native vs Python asciichartpy (via interop) for 10-point chart.
+
+**mojo_100_points / python_100_points**  
+Compares medium-sized chart performance between implementations.
+
+**mojo_1000_points / python_1000_points**  
+Compares large chart performance. Tests where Python interop overhead matters most.
 
 ## Contributing
 
