@@ -1,6 +1,8 @@
 # mojo-asciichart 🔥
 
-**Nice-looking lightweight console ASCII line charts ╭┈╯ for Mojo**
+**Nice-looking lightweight console ASCII line charts ╭‹╯ for Mojo**
+
+[![CodeQL](https://github.com/DataBooth/mojo-asciichart/workflows/CodeQL/badge.svg)](https://github.com/DataBooth/mojo-asciichart/actions/workflows/codeql.yml)
 
 > **Status:** ✅ **Production Ready** - Pixel-perfect Python compatibility achieved
 
