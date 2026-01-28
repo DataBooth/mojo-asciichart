@@ -37,14 +37,13 @@ fn test_no_colors_by_default() raises:
 
 
 fn test_color_scheme_factories() raises:
-    """Test that all color scheme factories create valid ChartColors."""
-    # Just verify they don't raise errors
-    var default_colors = ChartColors.default()
-    var blue_colors = ChartColors.blue()
-    var matrix_colors = ChartColors.matrix()
-    var fire_colors = ChartColors.fire()
-    var ocean_colors = ChartColors.ocean()
-    var rainbow_colors = ChartColors.rainbow()
+    """Test that all color scheme factories work."""
+    _ = ChartColors.default()
+    _ = ChartColors.blue()
+    _ = ChartColors.matrix()
+    _ = ChartColors.fire()
+    _ = ChartColors.ocean()
+    _ = ChartColors.rainbow()
 
     # If we get here, all factories worked
     assert_true(True, "All color scheme factories should work")

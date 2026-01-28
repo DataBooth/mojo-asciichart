@@ -227,13 +227,29 @@ fn _get_bounds(series: List[Float64], config: Config) raises -> Bounds:
     return Bounds(minimum, maximum)
 
 
-fn _format_label(value: Float64) -> String:
-    """Format label to match Python's '{:8.2f} ' format.
+fn format_float(value: Float64, width: Int, precision: Int) -> String:
+    """Format a Float64 with specified width and precision.
 
-    Returns a string with 2 decimal places, right-aligned in 8 characters,
-    plus a trailing space (total 9 chars).
+    Mimics Python's format specifier {value:width.precisionf}.
+    For example, format_float(12.3456, 8, 2) produces "   12.35" (right-aligned).
+
+    Args:
+        value: The float value to format
+        width: Total width of the output string (includes sign, digits, and decimal point)
+        precision: Number of decimal places
+
+    Returns:
+        Formatted string with the value right-aligned in the specified width
+
+    Note:
+        This is a workaround for Mojo v0.25.7 which doesn't support format
+        specifiers like {:8.2f} in String.format(). Once Mojo's stdlib supports
+        this, this function can be replaced.
     """
-    # Convert to string with 2 decimal places
+    # Handle edge cases
+    var prec = precision if precision >= 0 else 0
+
+    # Extract integer and fractional parts
     var int_part = Int(value)
     var frac_part = value - Float64(int_part)
 
@@ -243,29 +259,48 @@ fn _format_label(value: Float64) -> String:
         int_part = -int_part
         frac_part = -frac_part
 
-    # Get fractional part as integer (multiply by 100)
-    var frac_int = Int(frac_part * 100.0 + 0.5)  # Round
+    # Convert fractional part to integer with rounding
+    var multiplier = 1.0
+    for _ in range(prec):
+        multiplier *= 10.0
+    var frac_int = Int(frac_part * multiplier + 0.5)
 
-    # Build the string: "X.YZ"
-    var result = String(int_part) + "."
+    # Handle rounding overflow (e.g., 0.999 with precision=2 -> 1.00)
+    if frac_int >= Int(multiplier):
+        int_part += 1
+        frac_int = 0
 
-    # Pad fractional part to 2 digits
-    if frac_int < 10:
-        result += "0"
-    result += String(frac_int)
+    # Build the string: "X.YZ..."
+    var result = String(int_part)
+
+    if prec > 0:
+        result += "."
+
+        # Pad fractional part to precision digits
+        var frac_str = String(frac_int)
+        var padding_needed = prec - len(frac_str)
+        for _ in range(padding_needed):
+            result += "0"
+        result += frac_str
 
     # Add negative sign if needed
     if is_negative:
         result = "-" + result
 
-    # Right-align in 8 characters
-    while len(result) < 8:
+    # Right-align in specified width
+    while len(result) < width:
         result = " " + result
 
-    # Add trailing spaces (2 spaces to match Python's format)
-    result += "  "
-
     return result
+
+
+fn _format_label(value: Float64) -> String:
+    """Format label to match Python's '{:8.2f}  ' format.
+
+    Returns a string with 2 decimal places, right-aligned in 8 characters,
+    plus two trailing spaces (total 10 chars).
+    """
+    return format_float(value, 8, 2) + "  "
 
 
 fn _create_grid(rows: Int, width: Int) -> List[List[String]]:
