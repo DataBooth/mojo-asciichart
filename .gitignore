@@ -44,3 +44,4 @@ docs/.doctrees/
 *.log
 .env
 .env.local
+output/
