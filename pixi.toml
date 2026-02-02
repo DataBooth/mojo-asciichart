@@ -1,8 +1,8 @@
-[workspace]
+[project]
 authors = ["Michael Booth <michael@databooth.com.au>"]
 channels = ["conda-forge", "https://conda.modular.com/max"]
 name = "mojo-asciichart"
-platforms = ["osx-arm64", "linux-64"]
+platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
 version = "0.1.0"
 
 [activation]
@@ -19,17 +19,9 @@ test-compat = "mojo -I src tests/test_python_compat.mojo"
 test-compare-python = "python tests/compare_with_python.py"
 test-interop = "mojo -I src tests/test_python_interop.mojo"
 
-# Run all tests
-test-all = """bash -c '
-set -e
-echo "=== Running All Tests ==="
-for test_file in tests/test_*.mojo; do
-  echo ""
-  mojo -I src "$test_file"
-done
-echo ""
-echo "=== All Tests Complete! ==="
-'"""
+# Test tasks
+# Run all tests (auto-discovers tests/test_*.mojo via scripts/run_tests.py)
+test-all = "python scripts/run_tests.py"
 
 # Build tasks
 build-package = "mkdir -p dist && mojo package src/asciichart -o dist/asciichart.mojopkg"
@@ -53,8 +45,14 @@ bench-python-comparison = "mojo -I src -I libs/benchsuite/src benchmarks/bench_p
 pre-commit = "pre-commit run --all-files"
 pre-commit-install = "pre-commit install"
 
+# Release / validation tasks
+validate-recipe = "./scripts/validate-recipe.sh recipe.yaml"
+pre-submit = "python scripts/pre_submit_checklist.py"
+pre-submit-modular-community = "python scripts/pre_submit_checklist.py"
+
 [dependencies]
 max = ">=25.7.0,<26"
-python = ">=3.10,<4"
+python = ">=3.11,<4"
+pre-commit = ">=4.5.1,<5"
+rattler-build = ">=0.55.1,<0.56"
 asciichartpy = ">=1.5.25,<2"
-pre-commit = ">=4.0.1,<5"
