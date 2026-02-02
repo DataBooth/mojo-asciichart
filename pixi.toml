@@ -28,14 +28,7 @@ build-package = "mkdir -p dist && mojo package src/asciichart -o dist/asciichart
 clean = "rm -rf dist __pycache__ .pytest_cache asciichart.mojopkg"
 
 # Example tasks
-example-simple = "mojo -I src examples/simple.mojo"
-example-sine = "mojo -I src examples/sine.mojo"
-example-gallery = "mojo -I src examples/gallery.mojo"
-example-snoopy = "mojo -I src examples/snoopy.mojo"
-example-snowflake = "mojo -I src examples/snowflake.mojo"
-example-colors = "mojo -I src examples/colors.mojo"
-example-australia = "mojo -I src examples/australia.mojo"
-example-ml-serving = "mojo -I src examples/ml_serving.mojo"
+examples-all = "python scripts/run_examples.py"
 
 # Benchmark tasks
 bench-plotting = "mojo -I src -I libs/benchsuite/src benchmarks/bench_plotting.mojo"
