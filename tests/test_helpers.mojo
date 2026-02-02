@@ -49,33 +49,52 @@ fn test_round_half_to_even_negatives() raises:
 
 fn test_find_extreme_min() raises:
     """Test finding minimum value."""
-    var data = List[Float64](5.0, 2.0, 8.0, 1.0, 9.0)
+    var data = List[Float64]()
+    data.append(5.0)
+    data.append(2.0)
+    data.append(8.0)
+    data.append(1.0)
+    data.append(9.0)
     assert_equal(_find_extreme(data, False), 1.0, "Should find minimum")
 
 
 fn test_find_extreme_max() raises:
     """Test finding maximum value."""
-    var data = List[Float64](5.0, 2.0, 8.0, 1.0, 9.0)
+    var data = List[Float64]()
+    data.append(5.0)
+    data.append(2.0)
+    data.append(8.0)
+    data.append(1.0)
+    data.append(9.0)
     assert_equal(_find_extreme(data, True), 9.0, "Should find maximum")
 
 
 fn test_find_extreme_with_nan() raises:
     """Test finding min/max with NaN values."""
-    var data = List[Float64](5.0, Float64("nan"), 2.0, 8.0, Float64("nan"), 1.0)
+    var data = List[Float64]()
+    data.append(5.0)
+    data.append(Float64("nan"))
+    data.append(2.0)
+    data.append(8.0)
+    data.append(Float64("nan"))
+    data.append(1.0)
     assert_equal(_find_extreme(data, False), 1.0, "Should find min ignoring NaN")
     assert_equal(_find_extreme(data, True), 8.0, "Should find max ignoring NaN")
 
 
 fn test_find_extreme_single_value() raises:
     """Test finding min/max with single value."""
-    var data = List[Float64](42.0)
+    var data = List[Float64]()
+    data.append(42.0)
     assert_equal(_find_extreme(data, False), 42.0)
     assert_equal(_find_extreme(data, True), 42.0)
 
 
 fn test_find_extreme_all_nan_raises() raises:
     """Test that all-NaN series raises error."""
-    var data = List[Float64](Float64("nan"), Float64("nan"))
+    var data = List[Float64]()
+    data.append(Float64("nan"))
+    data.append(Float64("nan"))
     var error_raised = False
     try:
         _ = _find_extreme(data, False)
@@ -86,19 +105,27 @@ fn test_find_extreme_all_nan_raises() raises:
 
 fn test_validate_series_valid() raises:
     """Test series validation with valid data."""
-    var data = List[Float64](1.0, 2.0, 3.0)
+    var data = List[Float64]()
+    data.append(1.0)
+    data.append(2.0)
+    data.append(3.0)
     assert_true(_validate_series(data), "Should validate series with numbers")
 
 
 fn test_validate_series_mixed() raises:
     """Test series validation with mixed NaN and valid."""
-    var data = List[Float64](Float64("nan"), 2.0, Float64("nan"))
+    var data = List[Float64]()
+    data.append(Float64("nan"))
+    data.append(2.0)
+    data.append(Float64("nan"))
     assert_true(_validate_series(data), "Should validate if any valid number")
 
 
 fn test_validate_series_all_nan() raises:
     """Test series validation with all NaN."""
-    var data = List[Float64](Float64("nan"), Float64("nan"))
+    var data = List[Float64]()
+    data.append(Float64("nan"))
+    data.append(Float64("nan"))
     assert_false(_validate_series(data), "Should reject all-NaN series")
 
 

@@ -353,10 +353,16 @@ fn _draw_axis_and_labels(
         var label_value = maximum - ((Float64(y - min2) * interval) / Float64(rows)) if rows > 0 else maximum
         var label = _format_label(label_value)
 
+        # Convert label to a list of single-character strings to avoid direct String indexing
+        var label_chars = List[String]()
+        for slice in label.codepoint_slices():
+            label_chars.append(String(slice))
+
         # Place label (no color applied to individual chars, just to tick)
-        for i in range(len(label)):
+        var label_len = len(label_chars)
+        for i in range(label_len):
             if i < width:
-                result[row_idx][i] = String(label[i])
+                result[row_idx][i] = label_chars[i]
 
         # Place tick (with color)
         var tick = symbols.ZERO_AXIS if y == 0 else symbols.TICK

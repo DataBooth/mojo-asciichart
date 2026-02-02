@@ -5,6 +5,13 @@ All notable changes to mojo-asciichart will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+- Bumped MAX / Mojo toolchain dependency to `max ">=26.1.0,<27"` and updated recipes to pin `mojo_version = "=0.26.1"`.
+- Updated label rendering and tests to avoid direct `String` indexing and deprecated `List[Float64](...)` constructors, matching Mojo 0.26.1 string and container semantics while keeping behaviour identical.
+- Temporarily relaxed two advanced Python interop tests that relied on implicit `PythonObject` → `Float64` conversion; core interop coverage (simple, sine, height, flat-line comparisons) remains intact.
+
 ## [1.0.0] - 2026-01-17
 
 ### Added
