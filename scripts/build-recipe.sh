@@ -5,7 +5,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-RECIPE_FILE="$PROJECT_ROOT/recipe.yaml"
+RECIPE_FILE="$PROJECT_ROOT/packaging/recipe.yaml"
 OUTPUT_DIR="$PROJECT_ROOT/output"
 
 RED='\033[0;31m'
