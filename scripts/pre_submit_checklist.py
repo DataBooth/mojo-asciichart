@@ -41,7 +41,7 @@ NC = "\033[0m"  # No colour
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SCRIPT_DIR = PROJECT_ROOT / "scripts"
-RECIPE_FILE = PROJECT_ROOT / "recipe.yaml"
+RECIPE_FILE = PROJECT_ROOT / "packaging" / "recipe.yaml"
 OUTPUT_DIR = PROJECT_ROOT / "output"
 PIXl_MANIFEST = PROJECT_ROOT / "pixi.toml"
 
@@ -117,17 +117,28 @@ def run_command(
 
 
 def get_recipe_version(path: Path) -> str | None:
-    """Extract the concrete numeric version from recipe.yaml.
+    """Extract concrete version from packaging/recipe.yaml.
 
-    The file contains multiple "version" fields (context.version,
-    package.version template). We want the numeric value from the
-    context block, e.g. "0.5.1".
+    Prefer context.version when available, then fall back to package.version
+    when it is a concrete literal (not a template expression).
     """
 
     if not path.is_file():
         return None
 
+    def _clean_version(value: str) -> str | None:
+        cleaned = value.strip().strip("'\"")
+        if not cleaned:
+            return None
+        if "${{" in cleaned or "}}" in cleaned:
+            return None
+        return cleaned
+
+    context_version: str | None = None
+    package_version: str | None = None
     in_context = False
+    in_package = False
+
     try:
         with path.open("r", encoding="utf-8") as f:
             for raw_line in f:
@@ -135,21 +146,27 @@ def get_recipe_version(path: Path) -> str | None:
                 if not line.strip():
                     continue
 
-                # Top-level key
                 if not line.startswith(" "):
-                    in_context = line.strip().startswith("context:")
+                    section = line.strip()
+                    in_context = section.startswith("context:")
+                    in_package = section.startswith("package:")
                     continue
 
-                if in_context:
-                    stripped = line.strip()
-                    if stripped.startswith("version:"):
-                        _, value = stripped.split(":", 1)
-                        return value.strip().strip("'\"")
+                stripped = line.strip()
+                if not stripped.startswith("version:"):
+                    continue
+
+                _, value = stripped.split(":", 1)
+                parsed = _clean_version(value)
+                if in_context and parsed:
+                    context_version = parsed
+                elif in_package and parsed:
+                    package_version = parsed
     except OSError as exc:
         error(f"Failed to read recipe file: {exc}")
         return None
 
-    return None
+    return context_version or package_version
 
 
 def check_tests() -> CheckResult:
@@ -160,6 +177,17 @@ def check_tests() -> CheckResult:
         return CheckResult("Full test suite", True, "All tests pass")
     error("Tests failed")
     return CheckResult("Full test suite", False, "Tests failed")
+
+
+def check_examples() -> CheckResult:
+    section("CHECK 2: Running examples (pixi run examples-all)")
+    cp = run_command(["pixi", "run", "examples-all"], check_name="Examples")
+    if cp.returncode == 0:
+        success("All examples ran successfully")
+        return CheckResult("Examples", True, "All examples ran successfully")
+    msg = "Examples run failed"
+    error(msg)
+    return CheckResult("Examples", False, msg)
 
 
 def check_recipe_validation() -> CheckResult:
@@ -223,7 +251,7 @@ def check_git_tag() -> List[CheckResult]:
 
     version = get_recipe_version(RECIPE_FILE)
     if not version:
-        msg = "Could not extract version from recipe.yaml"
+        msg = "Could not extract version from packaging/recipe.yaml"
         error(msg)
         results.append(CheckResult("Git tag exists", False, msg))
         return results
@@ -559,6 +587,7 @@ def main(argv: list[str] | None = None) -> int:
 
     # Run checks sequentially to preserve readable output ordering
     all_results.append(check_tests())
+    all_results.append(check_examples())
     all_results.append(check_recipe_validation())
     all_results.extend(check_build_and_artifacts())
     all_results.extend(check_git_tag())

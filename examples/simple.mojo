@@ -6,7 +6,7 @@ This example will create a basic line chart when the plot() function is implemen
 
 from asciichart import plot
 
-fn main() raises:
+def main() raises:
     print("=== mojo-asciichart Simple Example ===\n")
 
     # Create simple linear data

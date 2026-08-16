@@ -5,10 +5,10 @@ Verifies ANSI color code injection and color scheme factories.
 """
 
 from asciichart import plot, Config, ChartColors
-from testing import assert_true, assert_false, TestSuite
+from std.testing import assert_true, assert_false, TestSuite
 
 
-fn test_colors_in_output() raises:
+def test_colors_in_output() raises:
     """Test that ANSI color codes appear in output when colors are enabled."""
     var data = List[Float64]()
     for i in range(10):
@@ -23,7 +23,7 @@ fn test_colors_in_output() raises:
     assert_true("\033[" in output, "Output should contain ANSI escape codes")
 
 
-fn test_no_colors_by_default() raises:
+def test_no_colors_by_default() raises:
     """Test that output has no ANSI codes when colors are not configured."""
     var data = List[Float64]()
     for i in range(10):
@@ -36,7 +36,7 @@ fn test_no_colors_by_default() raises:
     assert_false("\033[" in output, "Default output should not contain ANSI escape codes")
 
 
-fn test_color_scheme_factories() raises:
+def test_color_scheme_factories() raises:
     """Test that all color scheme factories work."""
     _ = ChartColors.default()
     _ = ChartColors.blue()
@@ -49,7 +49,7 @@ fn test_color_scheme_factories() raises:
     assert_true(True, "All color scheme factories should work")
 
 
-fn test_colors_with_config() raises:
+def test_colors_with_config() raises:
     """Test that colors work when set via Config."""
     var data = List[Float64]()
     for i in range(5):
@@ -62,11 +62,11 @@ fn test_colors_with_config() raises:
     var output = plot(data, config)
 
     # Should contain ANSI codes and be non-empty
-    assert_true(len(output) > 0, "Output should not be empty")
+    assert_true(output.byte_length() > 0, "Output should not be empty")
     assert_true("\033[" in output, "Output should contain ANSI escape codes")
 
 
-def main():
+def main() raises:
     """Run all color tests."""
     var suite = TestSuite()
     suite.test[test_colors_in_output]()

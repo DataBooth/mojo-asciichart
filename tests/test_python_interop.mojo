@@ -6,11 +6,11 @@ directly from Mojo and comparing outputs.
 """
 
 from asciichart import plot, Config
-from python import Python
-from testing import assert_equal, TestSuite
+from std.python import Python
+from std.testing import assert_equal, TestSuite
 
 
-fn test_simple_comparison() raises:
+def test_simple_comparison() raises:
     """Compare simple linear data with Python asciichartpy."""
     # Create data in Mojo
     var mojo_data = List[Float64]()
@@ -33,9 +33,9 @@ fn test_simple_comparison() raises:
     assert_equal(mojo_output, py_output, "Outputs should match exactly")
 
 
-fn test_sine_wave_comparison() raises:
+def test_sine_wave_comparison() raises:
     """Compare sine wave with Python asciichartpy."""
-    from math import sin, pi
+    from std.math import sin, pi
 
     # Create sine wave data in Mojo
     var mojo_data = List[Float64]()
@@ -57,9 +57,9 @@ fn test_sine_wave_comparison() raises:
     assert_equal(mojo_output, py_output, "Sine wave outputs should match")
 
 
-fn test_with_height_config() raises:
+def test_with_height_config() raises:
     """Compare charts with height configuration."""
-    from math import sin, pi
+    from std.math import sin, pi
 
     # Create data
     var mojo_data = List[Float64]()
@@ -85,7 +85,7 @@ fn test_with_height_config() raises:
     assert_equal(mojo_output, py_output, "Configured outputs should match")
 
 
-fn test_flat_line_comparison() raises:
+def test_flat_line_comparison() raises:
     """Compare flat line (constant value) with Python."""
     # Create constant data
     var mojo_data = List[Float64]()
@@ -103,7 +103,7 @@ fn test_flat_line_comparison() raises:
     assert_equal(mojo_output, py_output, "Flat line outputs should match")
 
 
-fn test_data_from_python_list() raises:
+def test_data_from_python_list() raises:
     """Test using data loaded from Python directly.
 
     NOTE: Under Mojo 0.26.1 the PythonObject → Float64 conversion and indexing
@@ -118,7 +118,7 @@ fn test_data_from_python_list() raises:
     var _ = plot(mojo_data)
 
 
-fn test_csv_data_comparison() raises:
+def test_csv_data_comparison() raises:
     """Test with CSV-like data (demonstrating practical use case).
 
     NOTE: This test previously converted a Python-evaluated list into a Mojo
@@ -140,7 +140,7 @@ fn test_csv_data_comparison() raises:
     var _ = plot(mojo_data)
 
 
-def main():
+def main() raises:
     """Run all Python interop tests."""
     var suite = TestSuite()
     suite.test[test_simple_comparison]()

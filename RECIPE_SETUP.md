@@ -1,6 +1,6 @@
 # Recipe Validation Setup - Quick Start
 
-Your mojo-toml repo now has local validation tools that match modular-community CI exactly.
+Your mojo-asciichart repo now has local validation tools that match modular-community CI exactly.
 
 ## ✅ What's Been Added
 
@@ -13,9 +13,9 @@ Your mojo-toml repo now has local validation tools that match modular-community 
    - Auto-validates on push/PR
    - Shows results in Actions tab
 
-3. **recipe.yaml** - Root-level recipe file
+3. **packaging/recipe.yaml** - Canonical packaging recipe file
    - Validated schema (tests:, documentation:, repository:)
-   - Mojo 0.25.7 with context variables
+   - Mojo 0.26.1 with context variables
    - Ready for modular-community submission
 
 4. **Documentation** - `docs/RECIPE_VALIDATION.md`
@@ -28,14 +28,14 @@ Your mojo-toml repo now has local validation tools that match modular-community 
 ### Validate Locally (Before Committing)
 
 ```bash
-cd /Users/mjboothaus/code/github/databooth/mojo-toml
-./scripts/validate-recipe.sh recipe.yaml
+cd /Users/mjboothaus/code/github/databooth/mojo-asciichart
+./scripts/validate-recipe.sh packaging/recipe.yaml
 ```
 
 **Expected output:**
 ```
 ✅ Recipe validation passed!
-Your recipe.yaml follows the modular-community schema.
+Your recipe file follows the modular-community schema.
 ```
 
 ### Update Other Packages
@@ -49,13 +49,14 @@ cp .github/workflows/validate-recipe.yml ../mojo-yaml/.github/workflows/
 cp docs/RECIPE_VALIDATION.md ../mojo-yaml/docs/
 
 # Copy recipe from modular-community (already validated)
-cp /path/to/modular-community/recipes/mojo-yaml/recipe.yaml ../mojo-yaml/
+mkdir -p ../mojo-yaml/packaging
+cp /path/to/modular-community/recipes/mojo-yaml/recipe.yaml ../mojo-yaml/packaging/recipe.yaml
 ```
 
 ### Automated Validation
 
-The GitHub Actions workflow runs automatically when `recipe.yaml` changes. View results at:
-`https://github.com/DataBooth/mojo-toml/actions`
+The GitHub Actions workflow runs automatically when `packaging/recipe.yaml` changes. View results at:
+`https://github.com/DataBooth/mojo-asciichart/actions`
 
 ## 📋 Integration Options
 
@@ -67,10 +68,10 @@ Add to `.pre-commit-config.yaml`:
   - repo: local
     hooks:
       - id: validate-recipe
-        name: Validate recipe.yaml
+        name: Validate packaging/recipe.yaml
         entry: ./scripts/validate-recipe.sh
         language: system
-        files: ^recipe\.yaml$
+        files: ^packaging/recipe\.yaml$
         pass_filenames: false
 ```
 
@@ -82,7 +83,7 @@ Add to `justfile`:
 
 ```just
 validate-recipe:
-    ./scripts/validate-recipe.sh recipe.yaml
+    ./scripts/validate-recipe.sh packaging/recipe.yaml
 ```
 
 Usage: `just validate-recipe`
@@ -93,15 +94,15 @@ Add to `pixi.toml`:
 
 ```toml
 [tasks]
-validate-recipe = "./scripts/validate-recipe.sh recipe.yaml"
+validate-recipe = "./scripts/validate-recipe.sh packaging/recipe.yaml"
 ```
 
 Usage: `pixi run validate-recipe`
 
 ## 🔄 Workflow
 
-1. **Update recipe.yaml** - Make your changes
-2. **Validate locally** - `./scripts/validate-recipe.sh recipe.yaml`
+1. **Update packaging/recipe.yaml** - Make your changes
+2. **Validate locally** - `./scripts/validate-recipe.sh packaging/recipe.yaml`
 3. **Fix issues** - If validation fails
 4. **Commit** - Once validation passes
 5. **Submit PR** - To modular-community with confidence
@@ -124,7 +125,7 @@ See `docs/RECIPE_VALIDATION.md` for:
 
 ## 🔗 Next Steps
 
-1. Test validation: `./scripts/validate-recipe.sh recipe.yaml`
+1. Test validation: `./scripts/validate-recipe.sh packaging/recipe.yaml`
 2. Add to pre-commit: Edit `.pre-commit-config.yaml`
 3. Replicate to other packages: Copy files as shown above
 4. Read full guide: `docs/RECIPE_VALIDATION.md`

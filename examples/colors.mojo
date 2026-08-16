@@ -5,9 +5,9 @@ Demonstrates the ANSI color support using Mojo stdlib's utils._ansi.Color.
 """
 
 from asciichart import plot, Config, ChartColors
-from math import sin, pi
+from std.math import sin, pi
 
-fn main() raises:
+def main() raises:
     print("\n🎨 MOJO-ASCIICHART COLOR SCHEMES 🎨\n")
 
     # Create sample sine wave data

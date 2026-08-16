@@ -10,7 +10,7 @@ Tests performance of plot() with various data sizes and configurations.
 from benchsuite import BenchReport
 from asciichart import plot, Config, ChartColors
 
-fn plot_small_series():
+def plot_small_series():
     """Benchmark plotting 10 data points."""
     var data = List[Float64]()
     for i in range(10):
@@ -20,7 +20,7 @@ fn plot_small_series():
     except:
         pass
 
-fn plot_medium_series():
+def plot_medium_series():
     """Benchmark plotting 100 data points."""
     var data = List[Float64]()
     for i in range(100):
@@ -30,7 +30,7 @@ fn plot_medium_series():
     except:
         pass
 
-fn plot_large_series():
+def plot_large_series():
     """Benchmark plotting 1000 data points."""
     var data = List[Float64]()
     for i in range(1000):
@@ -40,7 +40,7 @@ fn plot_large_series():
     except:
         pass
 
-fn plot_with_config():
+def plot_with_config():
     """Benchmark plotting with custom config."""
     var data = List[Float64]()
     for i in range(100):
@@ -53,7 +53,7 @@ fn plot_with_config():
     except:
         pass
 
-fn plot_with_colors():
+def plot_with_colors():
     """Benchmark plotting with ANSI colors."""
     var data = List[Float64]()
     for i in range(100):
@@ -66,9 +66,9 @@ fn plot_with_colors():
     except:
         pass
 
-fn plot_sine_wave():
+def plot_sine_wave():
     """Benchmark plotting realistic sine wave."""
-    from math import sin, pi
+    from std.math import sin, pi
 
     var data = List[Float64]()
     for i in range(120):

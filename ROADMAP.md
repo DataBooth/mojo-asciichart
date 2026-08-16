@@ -58,7 +58,7 @@ Once established in modular-community, consider publishing to conda-forge for wi
 #### 🔄 Automated Version Bumps
 Automate version updates across:
 - `src/toml/__init__.mojo` version string
-- `recipe.yaml` version context
+- `packaging/recipe.yaml` version context
 - Git tags
 
 **Tools to evaluate:**

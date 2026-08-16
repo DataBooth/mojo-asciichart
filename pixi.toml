@@ -1,9 +1,9 @@
-[project]
+[workspace]
 authors = ["Michael Booth <michael@databooth.com.au>"]
 channels = ["conda-forge", "https://conda.modular.com/max"]
 name = "mojo-asciichart"
 platforms = ["linux-64", "linux-aarch64", "osx-arm64"]
-version = "0.1.0"
+version = "0.9.1"
 
 [activation]
 env = { MOJO_PATH = "$PIXI_PROJECT_ROOT/src" }
@@ -28,31 +28,24 @@ build-package = "mkdir -p dist && mojo package src/asciichart -o dist/asciichart
 clean = "rm -rf dist __pycache__ .pytest_cache asciichart.mojopkg"
 
 # Example tasks
-example-simple = "mojo -I src examples/simple.mojo"
-example-sine = "mojo -I src examples/sine.mojo"
-example-gallery = "mojo -I src examples/gallery.mojo"
-example-snoopy = "mojo -I src examples/snoopy.mojo"
-example-snowflake = "mojo -I src examples/snowflake.mojo"
-example-colors = "mojo -I src examples/colors.mojo"
-example-australia = "mojo -I src examples/australia.mojo"
-example-ml-serving = "mojo -I src examples/ml_serving.mojo"
+examples-all = "python scripts/run_examples.py"
 
 # Benchmark tasks
 bench-plotting = "mojo -I src -I libs/benchsuite/src benchmarks/bench_plotting.mojo"
 bench-python-comparison = "mojo -I src -I libs/benchsuite/src benchmarks/bench_python_comparison.mojo"
 
 # Code quality tasks
-pre-commit = "pre-commit run --all-files"
-pre-commit-install = "pre-commit install"
+prek = "prek run --all-files"
+prek-install = "prek install -f"
 
 # Release / validation tasks
-validate-recipe = "./scripts/validate-recipe.sh recipe.yaml"
+validate-recipe = "./scripts/validate-recipe.sh packaging/recipe.yaml"
 pre-submit = "python scripts/pre_submit_checklist.py"
 pre-submit-modular-community = "python scripts/pre_submit_checklist.py"
 
 [dependencies]
-max = ">=26.1.0,<27"
+mojo = "==1.0.0"
 python = ">=3.11,<4"
-pre-commit = ">=4.5.1,<5"
+prek = ">=0.4.5,<1"
 rattler-build = ">=0.55.1,<0.56"
 asciichartpy = ">=1.5.25,<2"

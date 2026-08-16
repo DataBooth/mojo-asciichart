@@ -14,9 +14,9 @@ Use Case:
 
 from asciichart import plot, Config, ChartColors
 from random import random_float64
-from math import sin, pi
+from std.math import sin, pi
 
-fn simulate_prediction_latency(request_num: Int, total_requests: Int) -> Float64:
+def simulate_prediction_latency(request_num: Int, total_requests: Int) -> Float64:
     """
     Simulate realistic ML prediction latency with various real-world patterns:
     - Base latency around 10-20ms
@@ -46,7 +46,7 @@ fn simulate_prediction_latency(request_num: Int, total_requests: Int) -> Float64
     return base_latency + memory_pressure + noise + gc_spike + outlier
 
 
-fn main() raises:
+def main() raises:
     print("\n🚀 ML MODEL SERVING - LATENCY MONITORING 🚀\n")
     print("Scenario: Production API serving predictions")
     print("Monitoring: Last 100 requests (real-time latency in milliseconds)")

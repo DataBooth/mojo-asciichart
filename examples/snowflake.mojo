@@ -6,9 +6,9 @@ functions to approximate the hexagonal symmetry of snowflakes.
 """
 
 from asciichart import plot, Config, ChartColors
-from math import sin, cos, pi
+from std.math import sin, cos, pi
 
-fn main() raises:
+def main() raises:
     print("\n❄️  SNOWFLAKE PATTERN ❄️\n")
 
     # Create snowflake-like pattern with 6-fold symmetry

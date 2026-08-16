@@ -8,9 +8,9 @@ Based on the traditional "Snoopy calendar" pattern popularised in the 1960s.
 """
 
 from asciichart import plot
-from math import sin, cos, pi, sqrt
+from std.math import sin, cos, pi, sqrt
 
-fn main() raises:
+def main() raises:
     print("\n🐕 SNOOPY SLEEPING ON HIS DOGHOUSE 🐕\n")
 
     # Create Snoopy-shaped data
