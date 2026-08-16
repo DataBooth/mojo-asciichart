@@ -3,9 +3,9 @@ Sine wave example demonstrating mojo-asciichart with smooth curves.
 """
 
 from asciichart import plot, Config
-from math import sin, pi
+from std.math import sin, pi
 
-fn main() raises:
+def main() raises:
     print("=== mojo-asciichart Sine Wave Example ===\n")
 
     # Generate sine wave data

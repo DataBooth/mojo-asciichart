@@ -1,6 +1,6 @@
 from asciichart import plot
 
-fn main() raises:
+def main() raises:
     # Basic smoke test: generate a simple chart and ensure it is non-empty.
     var data = [0.0, 1.0, 0.0, -1.0, 0.0]
     var chart = plot(data)

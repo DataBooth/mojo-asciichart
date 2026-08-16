@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- Bumped MAX / Mojo toolchain dependency to `max ">=26.1.0,<27"` and updated recipes to pin `mojo_version = "=0.26.1"`.
-- Updated label rendering and tests to avoid direct `String` indexing and deprecated `List[Float64](...)` constructors, matching Mojo 0.26.1 string and container semantics while keeping behaviour identical.
-- Temporarily relaxed two advanced Python interop tests that relied on implicit `PythonObject` → `Float64` conversion; core interop coverage (simple, sine, height, flat-line comparisons) remains intact.
+- Migrated workspace/runtime dependencies and recipe compiler pins to Mojo `1.0.0`.
+- Updated source/tests/examples from legacy `fn` syntax and older import paths to Mojo 1.0-compatible forms (`def`, `std.testing`, `std.math`, `std.python`).
+- Replaced Mojo 1.0-incompatible string operations (`len(String)`) and refactored nested closure captures that failed under stricter inference.
+- Inlined ANSI colour support in `src/asciichart/__init__.mojo` to remove the missing `utils._ansi` dependency path.
+- Revalidated migration with `pixi run test-all` (all suites passing) and `pixi run build-package` (success with warnings only).
 
 ## [1.0.0] - 2026-01-17
 

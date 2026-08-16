@@ -6,9 +6,9 @@ A native Mojo port of asciichartpy (Python) and asciichart (JavaScript) by Igor 
 Example:
     ```mojo
     from asciichart import plot
-    from math import sin, pi
+    from std.math import sin, pi
 
-    fn main() raises:
+    def main() raises:
         var data = List[Float64]()
         for i in range(120):
             data.append(15.0 * sin(i * ((pi * 4) / 120)))
@@ -23,8 +23,22 @@ Acknowledgements:
     - See CREDITS.md for detailed acknowledgements
 """
 
-from math import floor, ceil, isnan
-from utils._ansi import Color
+from std.math import floor, ceil, isnan
+
+
+@fieldwise_init
+struct Color(ImplicitlyCopyable, Copyable, Movable):
+    """ANSI color escape codes used by chart rendering."""
+    var color: String
+
+    comptime NONE = Color("")
+    comptime RED = Color("\033[31m")
+    comptime GREEN = Color("\033[32m")
+    comptime YELLOW = Color("\033[33m")
+    comptime BLUE = Color("\033[34m")
+    comptime MAGENTA = Color("\033[35m")
+    comptime CYAN = Color("\033[36m")
+    comptime END = Color("\033[0m")
 
 
 @fieldwise_init
@@ -41,7 +55,7 @@ struct Symbols(Copyable, Movable):
     var CORNER_UP_LEFT: String
     var VERTICAL: String
 
-    fn __init__(out self):
+    def __init__(out self):
         """Create default box-drawing symbols."""
         self.ZERO_AXIS = "┼"
         self.TICK = "┤"
@@ -61,39 +75,39 @@ struct ChartColors(ImplicitlyCopyable, Copyable, Movable):
     var axis: Color
     var labels: Color
 
-    fn __init__(out self, line: Color = Color.NONE, axis: Color = Color.NONE, labels: Color = Color.NONE):
+    def __init__(out self, line: Color = Color.NONE, axis: Color = Color.NONE, labels: Color = Color.NONE):
         """Create custom color scheme."""
         self.line = line
         self.axis = axis
         self.labels = labels
 
     @staticmethod
-    fn default() -> ChartColors:
+    def default() -> ChartColors:
         """Default color scheme (no colors)."""
         return ChartColors()
 
     @staticmethod
-    fn blue() -> ChartColors:
+    def blue() -> ChartColors:
         """Blue theme - blue line, cyan labels."""
         return ChartColors(line=Color.BLUE, axis=Color.CYAN, labels=Color.CYAN)
 
     @staticmethod
-    fn matrix() -> ChartColors:
+    def matrix() -> ChartColors:
         """Matrix/terminal theme - green on black."""
         return ChartColors(line=Color.GREEN, axis=Color.GREEN, labels=Color.GREEN)
 
     @staticmethod
-    fn fire() -> ChartColors:
+    def fire() -> ChartColors:
         """Fire theme - red/yellow."""
         return ChartColors(line=Color.RED, axis=Color.YELLOW, labels=Color.YELLOW)
 
     @staticmethod
-    fn ocean() -> ChartColors:
+    def ocean() -> ChartColors:
         """Ocean theme - cyan/blue."""
         return ChartColors(line=Color.CYAN, axis=Color.BLUE, labels=Color.BLUE)
 
     @staticmethod
-    fn rainbow() -> ChartColors:
+    def rainbow() -> ChartColors:
         """Rainbow theme - magenta line."""
         return ChartColors(line=Color.MAGENTA, axis=Color.CYAN, labels=Color.YELLOW)
 
@@ -108,7 +122,7 @@ struct Config(Copyable, Movable):
     var format_str: String
     var colors: Optional[ChartColors]
 
-    fn __init__(out self):
+    def __init__(out self):
         """Create default configuration."""
         self.height = None
         self.min_val = None
@@ -118,12 +132,12 @@ struct Config(Copyable, Movable):
         self.colors = None
 
 
-fn _isnum(n: Float64) -> Bool:
+def _isnum(n: Float64) -> Bool:
     """Check if value is a valid number (not NaN)."""
     return not isnan(n)
 
 
-fn _round_half_to_even(value: Float64) -> Int:
+def _round_half_to_even(value: Float64) -> Int:
     """Implement banker's rounding (IEEE 754): round half to even.
 
     This matches Python's round() behavior where .5 values round to
@@ -148,7 +162,7 @@ fn _round_half_to_even(value: Float64) -> Int:
         return floor_int if floor_int % 2 == 0 else floor_int + 1
 
 
-fn _find_extreme(series: List[Float64], find_max: Bool) raises -> Float64:
+def _find_extreme(series: List[Float64], find_max: Bool) raises -> Float64:
     """Find min or max value in series, ignoring NaN.
 
     Args:
@@ -177,17 +191,17 @@ fn _find_extreme(series: List[Float64], find_max: Bool) raises -> Float64:
     return result.value()
 
 
-fn _min(series: List[Float64]) raises -> Float64:
+def _min(series: List[Float64]) raises -> Float64:
     """Find minimum value in series, ignoring NaN."""
     return _find_extreme(series, False)
 
 
-fn _max(series: List[Float64]) raises -> Float64:
+def _max(series: List[Float64]) raises -> Float64:
     """Find maximum value in series, ignoring NaN."""
     return _find_extreme(series, True)
 
 
-fn _validate_series(series: List[Float64]) -> Bool:
+def _validate_series(series: List[Float64]) -> Bool:
     """Check if series has at least one valid (non-NaN) value."""
     for i in range(len(series)):
         if _isnum(series[i]):
@@ -200,12 +214,12 @@ struct Bounds:
     var minimum: Float64
     var maximum: Float64
 
-    fn __init__(out self, minimum: Float64, maximum: Float64):
+    def __init__(out self, minimum: Float64, maximum: Float64):
         self.minimum = minimum
         self.maximum = maximum
 
 
-fn _get_bounds(series: List[Float64], config: Config) raises -> Bounds:
+def _get_bounds(series: List[Float64], config: Config) raises -> Bounds:
     """Get min/max bounds from config or calculate from series.
 
     Args:
@@ -227,7 +241,7 @@ fn _get_bounds(series: List[Float64], config: Config) raises -> Bounds:
     return Bounds(minimum, maximum)
 
 
-fn format_float(value: Float64, width: Int, precision: Int) -> String:
+def format_float(value: Float64, width: Int, precision: Int) -> String:
     """Format a Float64 with specified width and precision.
 
     Mimics Python's format specifier {value:width.precisionf}.
@@ -278,7 +292,7 @@ fn format_float(value: Float64, width: Int, precision: Int) -> String:
 
         # Pad fractional part to precision digits
         var frac_str = String(frac_int)
-        var padding_needed = prec - len(frac_str)
+        var padding_needed = prec - frac_str.byte_length()
         for _ in range(padding_needed):
             result += "0"
         result += frac_str
@@ -288,13 +302,13 @@ fn format_float(value: Float64, width: Int, precision: Int) -> String:
         result = "-" + result
 
     # Right-align in specified width
-    while len(result) < width:
+    while result.byte_length() < width:
         result = " " + result
 
     return result
 
 
-fn _format_label(value: Float64) -> String:
+def _format_label(value: Float64) -> String:
     """Format label to match Python's '{:8.2f}  ' format.
 
     Returns a string with 2 decimal places, right-aligned in 8 characters,
@@ -303,7 +317,7 @@ fn _format_label(value: Float64) -> String:
     return format_float(value, 8, 2) + "  "
 
 
-fn _create_grid(rows: Int, width: Int) -> List[List[String]]:
+def _create_grid(rows: Int, width: Int) -> List[List[String]]:
     """Create empty character grid for rendering.
 
     Args:
@@ -322,7 +336,7 @@ fn _create_grid(rows: Int, width: Int) -> List[List[String]]:
     return result^
 
 
-fn _draw_axis_and_labels(
+def _draw_axis_and_labels(
     mut result: List[List[String]],
     min2: Int,
     max2: Int,
@@ -372,7 +386,7 @@ fn _draw_axis_and_labels(
             result[row_idx][offset - 1] = String(colors.axis.color) + tick + String(Color.END.color)
 
 
-fn _plot_line_segment(
+def _plot_line_segment(
     mut result: List[List[String]],
     x: Int,
     y0: Int,
@@ -394,35 +408,35 @@ fn _plot_line_segment(
         symbols: Symbol set for rendering
         line_color: Color for the line
     """
-    fn colored(symbol: String) -> String:
+    def colored(symbol: String, line_color: Color) -> String:
         # Only apply color if not NONE
         if String(line_color.color) == "":
             return symbol
         return String(line_color.color) + symbol + String(Color.END.color)
 
     if y0 == y1:
-        result[rows - y0][x + offset] = colored(symbols.HORIZONTAL)
+        result[rows - y0][x + offset] = colored(symbols.HORIZONTAL, line_color)
         return
 
     # Draw corners
     if y0 > y1:  # Ascending
-        result[rows - y1][x + offset] = colored(symbols.CORNER_DOWN_RIGHT)
-        result[rows - y0][x + offset] = colored(symbols.CORNER_UP_RIGHT)
+        result[rows - y1][x + offset] = colored(symbols.CORNER_DOWN_RIGHT, line_color)
+        result[rows - y0][x + offset] = colored(symbols.CORNER_UP_RIGHT, line_color)
     else:  # Descending
-        result[rows - y1][x + offset] = colored(symbols.CORNER_DOWN_LEFT)
-        result[rows - y0][x + offset] = colored(symbols.CORNER_UP_LEFT)
+        result[rows - y1][x + offset] = colored(symbols.CORNER_DOWN_LEFT, line_color)
+        result[rows - y0][x + offset] = colored(symbols.CORNER_UP_LEFT, line_color)
 
     # Fill vertical connector
     for y in range(min(y0, y1) + 1, max(y0, y1)):
-        result[rows - y][x + offset] = colored(symbols.VERTICAL)
+        result[rows - y][x + offset] = colored(symbols.VERTICAL, line_color)
 
 
-fn plot(series: List[Float64]) raises -> String:
+def plot(series: List[Float64]) raises -> String:
     """Generate an ASCII line chart with default configuration."""
     return plot(series, Config())
 
 
-fn plot(series: List[Float64], config: Config) raises -> String:
+def plot(series: List[Float64], config: Config) raises -> String:
     """
     Generate an ASCII line chart from a list of Float64 values.
 
@@ -480,16 +494,15 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     var width = len(series) + offset
 
     # Helper functions for scaling
-    fn clamp(n: Float64) -> Float64:
+    def clamp(n: Float64, minimum: Float64, maximum: Float64) -> Float64:
         if n < minimum:
             return minimum
         elif n > maximum:
             return maximum
         else:
             return n
-
-    fn scaled(y: Float64) -> Int:
-        var scaled_val = clamp(y) * ratio
+    def scaled(y: Float64, minimum: Float64, maximum: Float64, ratio: Float64, min2: Int) -> Int:
+        var scaled_val = clamp(y, minimum, maximum) * ratio
         return _round_half_to_even(scaled_val) - min2
 
     # Create result grid
@@ -503,9 +516,9 @@ fn plot(series: List[Float64], config: Config) raises -> String:
     if _isnum(d0):
         var tick = symbols.ZERO_AXIS
         if String(colors.axis.color) == "":
-            result[rows - scaled(d0)][offset - 1] = tick
+            result[rows - scaled(d0, minimum, maximum, ratio, min2)][offset - 1] = tick
         else:
-            result[rows - scaled(d0)][offset - 1] = String(colors.axis.color) + tick + String(Color.END.color)
+            result[rows - scaled(d0, minimum, maximum, ratio, min2)][offset - 1] = String(colors.axis.color) + tick + String(Color.END.color)
 
     # Plot the line
     for x in range(len(series) - 1):
@@ -522,7 +535,7 @@ fn plot(series: List[Float64], config: Config) raises -> String:
                 gap_start = symbols.GAP_START
             else:
                 gap_start = String(colors.line.color) + symbols.GAP_START + String(Color.END.color)
-            result[rows - scaled(v1)][x + offset] = gap_start
+            result[rows - scaled(v1, minimum, maximum, ratio, min2)][x + offset] = gap_start
             continue
 
         if _isnum(v0) and isnan(v1):
@@ -531,12 +544,12 @@ fn plot(series: List[Float64], config: Config) raises -> String:
                 gap_end = symbols.GAP_END
             else:
                 gap_end = String(colors.line.color) + symbols.GAP_END + String(Color.END.color)
-            result[rows - scaled(v0)][x + offset] = gap_end
+            result[rows - scaled(v0, minimum, maximum, ratio, min2)][x + offset] = gap_end
             continue
 
         # Both values are valid numbers - use helper function
-        var y0 = scaled(v0)
-        var y1 = scaled(v1)
+        var y0 = scaled(v0, minimum, maximum, ratio, min2)
+        var y1 = scaled(v1, minimum, maximum, ratio, min2)
         _plot_line_segment(result, x, y0, y1, rows, offset, symbols, colors.line)
 
     # Join result into string

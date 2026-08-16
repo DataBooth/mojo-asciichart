@@ -7,9 +7,9 @@ library using Mojo's Python interop.
 
 from benchsuite import BenchReport
 from asciichart import plot
-from python import Python
+from std.python import Python
 
-fn bench_mojo_10_points():
+def bench_mojo_10_points():
     """Benchmark Mojo implementation with 10 points."""
     var data = List[Float64]()
     for i in range(10):
@@ -20,7 +20,7 @@ fn bench_mojo_10_points():
         pass
 
 
-fn bench_mojo_100_points():
+def bench_mojo_100_points():
     """Benchmark Mojo implementation with 100 points."""
     var data = List[Float64]()
     for i in range(100):
@@ -31,7 +31,7 @@ fn bench_mojo_100_points():
         pass
 
 
-fn bench_mojo_1000_points():
+def bench_mojo_1000_points():
     """Benchmark Mojo implementation with 1000 points."""
     var data = List[Float64]()
     for i in range(1000):
@@ -42,7 +42,7 @@ fn bench_mojo_1000_points():
         pass
 
 
-fn bench_python_10_points():
+def bench_python_10_points():
     """Benchmark Python asciichartpy with 10 points via interop."""
     try:
         var asciichartpy = Python.import_module("asciichartpy")
@@ -54,7 +54,7 @@ fn bench_python_10_points():
         pass
 
 
-fn bench_python_100_points():
+def bench_python_100_points():
     """Benchmark Python asciichartpy with 100 points via interop."""
     try:
         var asciichartpy = Python.import_module("asciichartpy")
@@ -66,7 +66,7 @@ fn bench_python_100_points():
         pass
 
 
-fn bench_python_1000_points():
+def bench_python_1000_points():
     """Benchmark Python asciichartpy with 1000 points via interop."""
     try:
         var asciichartpy = Python.import_module("asciichartpy")

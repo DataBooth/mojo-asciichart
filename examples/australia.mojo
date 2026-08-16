@@ -7,7 +7,7 @@ The chart roughly follows the southern coastline of Australia from west to east.
 
 from asciichart import plot, Config, ChartColors
 
-fn main() raises:
+def main() raises:
     print("\n🇦🇺 AUSTRALIA COASTLINE 🇦🇺\n")
     print("Approximate southern coastline (West to East)")
     print("Perth → Adelaide → Melbourne → Sydney → Brisbane\n")

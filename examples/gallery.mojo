@@ -5,13 +5,13 @@ This file showcases various chart types and configurations for visual verificati
 """
 
 from asciichart import plot, Config
-from math import sin, cos, pi, sqrt
+from std.math import sin, cos, pi, sqrt
 
-fn print_separator():
+def print_separator():
     print("\n" + "=" * 80 + "\n")
 
 
-fn example_linear() raises:
+def example_linear() raises:
     """Simple linear progression."""
     print("LINEAR PROGRESSION (y = x)")
     print("Simple ascending line\n")
@@ -23,7 +23,7 @@ fn example_linear() raises:
     print(plot(data))
 
 
-fn example_quadratic() raises:
+def example_quadratic() raises:
     """Quadratic growth."""
     print("QUADRATIC GROWTH (y = x²)")
     print("Accelerating curve\n")
@@ -35,7 +35,7 @@ fn example_quadratic() raises:
     print(plot(data))
 
 
-fn example_sine_wave() raises:
+def example_sine_wave() raises:
     """Smooth sine wave matching original asciichart README."""
     print("SINE WAVE (matching original asciichart README example)")
     print("120 points, 4 complete cycles: 15 * sin(i * π * 4 / 120)\n")
@@ -47,7 +47,7 @@ fn example_sine_wave() raises:
     print(plot(data))
 
 
-fn example_cosine_wave() raises:
+def example_cosine_wave() raises:
     """Cosine wave matching README height rescaling example."""
     print("COSINE WAVE WITH HEIGHT RESCALING")
     print("120 points, rescaled to height=6: 15 * cos(i * π * 8 / 120)\n")
@@ -61,7 +61,7 @@ fn example_cosine_wave() raises:
     print(plot(data, config))
 
 
-fn example_damped_oscillation() raises:
+def example_damped_oscillation() raises:
     """Decaying oscillation."""
     print("DAMPED OSCILLATION")
     print("Sine wave with exponential decay\n")
@@ -75,7 +75,7 @@ fn example_damped_oscillation() raises:
     print(plot(data))
 
 
-fn example_step_function() raises:
+def example_step_function() raises:
     """Step function."""
     print("STEP FUNCTION")
     print("Discrete jumps between levels\n")
@@ -88,7 +88,7 @@ fn example_step_function() raises:
     print(plot(data))
 
 
-fn example_random_walk() raises:
+def example_random_walk() raises:
     """Simulated random walk."""
     print("RANDOM WALK (simulated)")
     print("Cumulative random steps\n")
@@ -107,7 +107,7 @@ fn example_random_walk() raises:
     print(plot(data))
 
 
-fn example_sawtooth() raises:
+def example_sawtooth() raises:
     """Sawtooth wave."""
     print("SAWTOOTH WAVE")
     print("Linear rise with sudden drops\n")
@@ -120,7 +120,7 @@ fn example_sawtooth() raises:
     print(plot(data))
 
 
-fn example_square_root() raises:
+def example_square_root() raises:
     """Square root function."""
     print("SQUARE ROOT (y = √x)")
     print("Decelerating growth\n")
@@ -132,7 +132,7 @@ fn example_square_root() raises:
     print(plot(data))
 
 
-fn example_with_config() raises:
+def example_with_config() raises:
     """Same data with different heights."""
     print("SINE WAVE WITH DIFFERENT HEIGHTS")
     print("Demonstrating Config height parameter\n")
@@ -155,7 +155,7 @@ fn example_with_config() raises:
     print(plot(data, config2))
 
 
-fn example_flat_line() raises:
+def example_flat_line() raises:
     """Constant value."""
     print("FLAT LINE (constant value)")
     print("All values equal\n")
@@ -167,7 +167,7 @@ fn example_flat_line() raises:
     print(plot(data))
 
 
-fn example_spike() raises:
+def example_spike() raises:
     """Sharp spike."""
     print("SPIKE")
     print("Sharp peak in data\n")
@@ -182,7 +182,7 @@ fn example_spike() raises:
     print(plot(data))
 
 
-fn main() raises:
+def main() raises:
     print("\n" + "=" * 80)
     print("MOJO-ASCIICHART GALLERY".center(80))
     print("Visual verification of chart rendering".center(80))
